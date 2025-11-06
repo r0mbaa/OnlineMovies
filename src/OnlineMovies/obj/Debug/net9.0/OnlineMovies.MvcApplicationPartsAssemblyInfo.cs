@@ -11,13 +11,7 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("OnlineMovies")]
-[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b6481ad7bc29c3d4d476c2bb27ade024ccb970f7")]
-[assembly: System.Reflection.AssemblyProductAttribute("OnlineMovies")]
-[assembly: System.Reflection.AssemblyTitleAttribute("OnlineMovies")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+[assembly: Microsoft.AspNetCore.Mvc.ApplicationParts.ApplicationPartAttribute("Microsoft.AspNetCore.OpenApi")]
 
 // Создано классом WriteCodeFragment MSBuild.
 

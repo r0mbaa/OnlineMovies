@@ -1,0 +1,69 @@
+[
+  {
+    "id": 1,
+    "title": "Неоновый горизонт",
+    "genre": "Научная фантастика",
+    "rating": 8.7,
+    "year": 2024,
+    "duration": 126,
+    "poster": "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=800&q=80",
+    "description": "Группа исследователей отправляется навстречу сверхновой, чтобы спасти умирающее Солнце.",
+    "tags": ["премьера", "IMAX"]
+  },
+  {
+    "id": 2,
+    "title": "Последняя арена",
+    "genre": "Экшн",
+    "rating": 7.9,
+    "year": 2023,
+    "duration": 138,
+    "poster": "https://images.unsplash.com/photo-1525097487452-6278ff080c31?auto=format&fit=crop&w=800&q=80",
+    "description": "Бывший чемпион смешанных единоборств возвращается, чтобы защитить свой город от криминального синдиката.",
+    "tags": ["новинка", "4K"]
+  },
+  {
+    "id": 3,
+    "title": "Сияние звука",
+    "genre": "Драма",
+    "rating": 8.4,
+    "year": 2022,
+    "duration": 112,
+    "poster": "https://images.unsplash.com/photo-1517520287167-4bbf64a00d66?auto=format&fit=crop&w=800&q=80",
+    "description": "История молодой пианистки, которая возвращается к музыке после потери слуха.",
+    "tags": ["лауреат", "атмосфера"]
+  },
+  {
+    "id": 4,
+    "title": "Невидимые города",
+    "genre": "Фэнтези",
+    "rating": 9.1,
+    "year": 2024,
+    "duration": 154,
+    "poster": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80",
+    "description": "Путешественник открывает параллельные миры, где каждый город хранит свою тайну.",
+    "tags": ["ожидание", "коллекция"]
+  },
+  {
+    "id": 5,
+    "title": "Импульс",
+    "genre": "Триллер",
+    "rating": 7.6,
+    "year": 2021,
+    "duration": 105,
+    "poster": "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=800&q=80",
+    "description": "Инженер-разработчик застревает в симуляции, где каждый сбой стирает часть его памяти.",
+    "tags": ["культовое", "выбор редакции"]
+  },
+  {
+    "id": 6,
+    "title": "Тепло",
+    "genre": "Романтика",
+    "rating": 8.0,
+    "year": 2020,
+    "duration": 119,
+    "poster": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80",
+    "description": "Двое незнакомцев встречаются во время метели и решают разделить одно путешествие на двоих.",
+    "tags": ["фаворит", "лайт"]
+  }
+]
+

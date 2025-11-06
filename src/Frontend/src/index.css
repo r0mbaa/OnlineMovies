@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Montserrat:wght@600;700&display=swap');
+
+:root {
+  font-family: 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --transition-base: 0.2s ease;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --app-background:
+    radial-gradient(120% 120% at -10% -20%, rgba(13, 148, 136, 0.16), transparent 55%),
+    radial-gradient(120% 150% at 110% -10%, rgba(34, 197, 94, 0.12), transparent 60%),
+    linear-gradient(180deg, #020409 0%, #010805 40%, #010102 100%);
+  --surface-elevated: rgba(6, 15, 12, 0.92);
+  --surface-base: rgba(7, 24, 18, 0.78);
+  --surface-pill: rgba(6, 42, 28, 0.65);
+  --border-muted: rgba(94, 234, 212, 0.18);
+  --border-strong: rgba(134, 239, 172, 0.42);
+  --shadow-elevated: 0 24px 48px rgba(0, 0, 0, 0.55);
+  --shadow-strong: 0 52px 90px rgba(0, 0, 0, 0.72);
+  --brand-gradient: linear-gradient(135deg, #22d3ee 0%, #16a34a 45%, #065f46 100%);
+  --text-primary: #d1fae5;
+  --text-secondary: rgba(190, 242, 219, 0.82);
+  --text-muted: rgba(94, 234, 212, 0.72);
+  --text-subtle: rgba(148, 239, 178, 0.5);
+  --text-inverse: #02140c;
+  --accent-primary: #22d3ee;
+  --accent-highlight: #34d399;
+  --accent-gradient: linear-gradient(135deg, #5eead4 0%, #34d399 45%, #16a34a 100%);
+  --accent-soft: linear-gradient(135deg, rgba(14, 165, 75, 0.32), rgba(15, 118, 110, 0.36));
+  --accent-soft-strong: linear-gradient(135deg, rgba(16, 185, 129, 0.75), rgba(21, 128, 61, 0.9));
+  --accent-border: rgba(20, 184, 166, 0.55);
+  --accent-shadow: rgba(20, 184, 166, 0.35);
+  --accent-outline: rgba(45, 212, 191, 0.25);
+  --avatar-gradient: linear-gradient(135deg, rgba(20, 184, 166, 0.92), rgba(34, 197, 94, 0.92));
+  --primary-gradient: linear-gradient(135deg, #22d3ee 0%, #2dd4bf 50%, #16a34a 100%);
+  --primary-button-text: #02140c;
+  --primary-shadow: 0 18px 36px rgba(20, 184, 166, 0.32);
+  --primary-shadow-hover: 0 28px 54px rgba(34, 197, 94, 0.46);
+  --ghost-background: rgba(1, 17, 12, 0.7);
+  --ghost-border: rgba(45, 212, 191, 0.26);
+  --ghost-border-hover: rgba(74, 222, 128, 0.55);
+  --hero-gradient: linear-gradient(135deg, rgba(6, 95, 70, 0.92) 0%, rgba(1, 21, 16, 0.95) 100%);
+  --hero-shadow: 0 46px 96px rgba(0, 0, 0, 0.65);
+  --hero-overlay: linear-gradient(180deg, rgba(6, 97, 70, 0.35) 0%, rgba(0, 10, 6, 0.82) 100%);
+  --hero-glow: radial-gradient(circle, rgba(20, 184, 166, 0.45) 0%, transparent 70%);
+  --rating-background: rgba(1, 18, 11, 0.88);
+  --rating-text: #5eead4;
+  --tag-background: rgba(16, 185, 129, 0.22);
+  --tag-border: rgba(45, 212, 191, 0.35);
+  --tag-text: rgba(190, 242, 219, 0.9);
+  --cta-background: rgba(20, 184, 166, 0.22);
+  --cta-border: rgba(20, 184, 166, 0.45);
+  --cta-hover: rgba(34, 197, 94, 0.5);
+  --auth-visual-gradient: linear-gradient(135deg, rgba(1, 20, 15, 0.92), rgba(2, 44, 36, 0.88));
+  --auth-glow: radial-gradient(circle at top, rgba(20, 184, 166, 0.38), transparent 65%);
+  --quote-accent: rgba(56, 189, 248, 0.85);
+  --detail-border: rgba(20, 184, 166, 0.32);
+  --error-color: rgba(248, 113, 113, 0.78);
+  --error-strong: rgba(248, 113, 113, 0.95);
+  --neon-ambient: rgba(20, 184, 166, 0.45);
+  --neon-ambient-soft: rgba(20, 184, 166, 0.18);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --app-background:
+    radial-gradient(120% 120% at -10% -10%, rgba(167, 243, 208, 0.26), transparent 55%),
+    radial-gradient(140% 140% at 110% -20%, rgba(134, 239, 172, 0.18), transparent 60%),
+    linear-gradient(180deg, #f1f9f2 0%, #d8eedd 100%);
+  --surface-elevated: rgba(244, 251, 245, 0.92);
+  --surface-base: rgba(229, 244, 234, 0.86);
+  --surface-pill: rgba(216, 236, 222, 0.78);
+  --border-muted: rgba(52, 211, 153, 0.18);
+  --border-strong: rgba(21, 128, 61, 0.28);
+  --shadow-elevated: 0 16px 28px rgba(15, 118, 110, 0.08);
+  --shadow-strong: 0 28px 44px rgba(14, 116, 74, 0.15);
+  --brand-gradient: linear-gradient(135deg, #16a34a 0%, #0f766e 100%);
+  --text-primary: #0f3d2b;
+  --text-secondary: rgba(17, 94, 89, 0.76);
+  --text-muted: rgba(22, 101, 52, 0.6);
+  --text-subtle: rgba(30, 64, 45, 0.52);
+  --text-inverse: #f1f9f2;
+  --accent-primary: #0ea5e9;
+  --accent-highlight: #16a34a;
+  --accent-gradient: linear-gradient(135deg, #5eead4 0%, #34d399 50%, #0ea5e9 100%);
+  --accent-soft: linear-gradient(135deg, rgba(14, 165, 75, 0.18), rgba(14, 165, 233, 0.16));
+  --accent-soft-strong: linear-gradient(135deg, rgba(16, 185, 129, 0.65), rgba(14, 165, 233, 0.65));
+  --accent-border: rgba(14, 165, 233, 0.28);
+  --accent-shadow: rgba(13, 148, 136, 0.18);
+  --accent-outline: rgba(14, 165, 233, 0.2);
+  --avatar-gradient: linear-gradient(135deg, rgba(16, 185, 129, 0.85), rgba(14, 165, 233, 0.85));
+  --primary-gradient: linear-gradient(135deg, #99f6e4 0%, #34d399 45%, #0ea5e9 100%);
+  --primary-button-text: #0b3d2d;
+  --primary-shadow: 0 16px 26px rgba(14, 165, 233, 0.22);
+  --primary-shadow-hover: 0 24px 46px rgba(14, 165, 233, 0.28);
+  --ghost-background: rgba(232, 245, 237, 0.78);
+  --ghost-border: rgba(16, 185, 129, 0.26);
+  --ghost-border-hover: rgba(14, 165, 233, 0.4);
+  --hero-gradient: linear-gradient(135deg, rgba(207, 250, 222, 0.88) 0%, rgba(187, 247, 208, 0.88) 45%, rgba(174, 232, 208, 0.9) 100%);
+  --hero-shadow: 0 28px 60px rgba(14, 116, 74, 0.28);
+  --hero-overlay: linear-gradient(180deg, rgba(199, 250, 229, 0.55) 0%, rgba(213, 245, 226, 0.6) 100%);
+  --hero-glow: radial-gradient(circle, rgba(134, 239, 172, 0.32) 0%, transparent 70%);
+  --rating-background: rgba(236, 252, 245, 0.82);
+  --rating-text: #047857;
+  --tag-background: rgba(16, 185, 129, 0.14);
+  --tag-border: rgba(14, 165, 233, 0.22);
+  --tag-text: rgba(0, 95, 70, 0.75);
+  --cta-background: rgba(16, 185, 129, 0.18);
+  --cta-border: rgba(14, 165, 233, 0.28);
+  --cta-hover: rgba(16, 185, 129, 0.3);
+  --auth-visual-gradient: linear-gradient(135deg, rgba(248, 253, 249, 0.95), rgba(224, 242, 232, 0.85));
+  --auth-glow: radial-gradient(circle at top, rgba(16, 185, 129, 0.28), transparent 65%);
+  --quote-accent: rgba(14, 116, 144, 0.75);
+  --detail-border: rgba(16, 185, 129, 0.22);
+  --error-color: #b91c1c;
+  --error-strong: #7f1d1d;
+  --neon-ambient: rgba(14, 165, 233, 0.3);
+  --neon-ambient-soft: rgba(16, 185, 129, 0.16);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--app-background);
+  color: var(--text-primary);
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
