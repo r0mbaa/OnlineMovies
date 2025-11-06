@@ -23,4 +23,4 @@ dist-ssr
 *.sw?
 
 #Для базы данных и других настроек в проекте
-appsettings.Development.json
+*.Development.json
