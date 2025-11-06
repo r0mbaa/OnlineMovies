@@ -1,23 +1,33 @@
+
+using Microsoft.EntityFrameworkCore;
+using OnlineMovies.Database;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Создаём БД и добавляем тестовые данные
+using (var scope = app.Services.CreateScope())
 {
-    app.MapOpenApi();
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.EnsureCreated();
+
+    if (!context.Items.Any())
+    {
+        context.Items.AddRange(
+            new OnlineMovies.Models.Item { Name = "MySQL предмет 1" },
+            new OnlineMovies.Models.Item { Name = "MySQL предмет 2" }
+        );
+        context.SaveChanges();
+    }
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

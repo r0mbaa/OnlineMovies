@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "ContainingType": "ItemsController",
+    "Method": "GetAll",
+    "RelativePath": "api/Items",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]

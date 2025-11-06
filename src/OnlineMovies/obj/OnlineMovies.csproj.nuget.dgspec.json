@@ -54,6 +54,14 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[9.0.9, )"
+            },
+            "MySql.Data": {
+              "target": "Package",
+              "version": "[9.5.0, )"
+            },
+            "Pomelo.EntityFrameworkCore.MySql": {
+              "target": "Package",
+              "version": "[9.0.0, )"
             }
           },
           "imports": [

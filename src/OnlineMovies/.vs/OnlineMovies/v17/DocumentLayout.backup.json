@@ -7,8 +7,28 @@
       "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\parom\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\onlinemovies\\src\\onlinemovies\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\parom\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\onlinemovies\\src\\onlinemovies\\onlinemovies.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:onlinemovies.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\parom\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\onlinemovies\\src\\onlinemovies\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\parom\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\onlinemovies\\src\\onlinemovies\\controllers\\itemscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:controllers\\itemscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\parom\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\onlinemovies\\src\\onlinemovies\\database\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:database\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\parom\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\onlinemovies\\src\\onlinemovies\\models\\item.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:models\\item.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\parom\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\onlinemovies\\src\\onlinemovies\\onlinemovies.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
@@ -22,11 +42,76 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "appsettings.Development.json",
+              "ToolTip": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\appsettings.Development.json",
+              "RelativeToolTip": "appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-11-06T18:01:45.982Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ItemsController.cs",
+              "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Controllers\\ItemsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ItemsController.cs",
+              "ToolTip": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Controllers\\ItemsController.cs",
+              "RelativeToolTip": "Controllers\\ItemsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-06T17:53:24.754Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Item.cs",
+              "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Models\\Item.cs",
+              "RelativeDocumentMoniker": "Models\\Item.cs",
+              "ToolTip": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Models\\Item.cs",
+              "RelativeToolTip": "Models\\Item.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-06T17:52:08.324Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Database\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "Database\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Database\\AppDbContext.cs",
+              "RelativeToolTip": "Database\\AppDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-06T17:49:52.307Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "OnlineMovies.http",
+              "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\OnlineMovies.http",
+              "RelativeDocumentMoniker": "OnlineMovies.http",
+              "ToolTip": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\OnlineMovies.http",
+              "RelativeToolTip": "OnlineMovies.http",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2025-11-06T15:47:58.901Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "OnlineMovies",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\OnlineMovies.csproj",
               "RelativeDocumentMoniker": "OnlineMovies.csproj",
@@ -44,20 +129,20 @@
               "RelativeDocumentMoniker": "appsettings.json",
               "ToolTip": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\appsettings.json",
               "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-11-06T15:47:42.615Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAXAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-06T15:47:41.57Z",
               "EditorCaption": ""
