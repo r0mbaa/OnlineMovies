@@ -1,6 +1,9 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using OnlineMovies.Database;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,23 +14,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddControllers();
 
-var app = builder.Build();
-
-// Создаём БД и добавляем тестовые данные
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    context.Database.EnsureCreated();
-
-    if (!context.Items.Any())
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        context.Items.AddRange(
-            new OnlineMovies.Models.Item { Name = "MySQL предмет 1" },
-            new OnlineMovies.Models.Item { Name = "MySQL предмет 2" }
-        );
-        context.SaveChanges();
-    }
-}
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
+
+var app = builder.Build();
 
 app.MapControllers();
 app.Run();
