@@ -1,5 +1,4 @@
-﻿using BCrypt.Net;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -7,13 +6,13 @@ using Microsoft.IdentityModel.Tokens;
 using OnlineMovies.Database;
 using OnlineMovies.DTO;
 using OnlineMovies.Models;
+using OnlineMovies.Responses;
 using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-
 
 [ApiController]
 [Route("api/[controller]")]
@@ -29,16 +28,16 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<string>> Register(UserRegisterDto request)
+    public async Task<IActionResult> Register(UserRegisterDto request)
     {
         if (await _context.Users.AnyAsync(u => u.Username == request.Username))
         {
-            return BadRequest("Username already exists.");
+            return BadRequest(new ApiResponse { Status = "Ошибка", Message = "Пользователь с таким именем уже существует." });
         }
 
         if (await _context.Users.AnyAsync(u => u.Email == request.Email))
         {
-            return BadRequest("Email already exists.");
+            return BadRequest(new ApiResponse { Status = "Ошибка", Message = "Пользователь с такой почтой уже существует." });
         }
 
         string hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
@@ -56,25 +55,56 @@ public class AuthController : ControllerBase
 
         string token = CreateToken(user);
 
-        return Ok(token);
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = DateTime.Now.AddDays(1),
+            Secure = true,
+            SameSite = SameSiteMode.Strict
+        };
+
+        Response.Cookies.Append("jwt-token-online-movies", token, cookieOptions);
+
+        var userData = new { id = user.UserId, username = user.Username, role = user.Role };
+        return Ok(new ApiResponse<object>
+        {
+            Status = "Успешно",
+            Message = "Вы успешно зарегистрировались",
+            Data = userData
+        });
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<string>> Login(UserLoginDto request)
+    public async Task<IActionResult> Login(UserLoginDto request)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.HashedPassword))
         {
-            return BadRequest("Invalid username or password.");
+            return BadRequest(new ApiResponse { Status = "Ошибка", Message = "Неверное имя пользователя или пароль." });
         }
 
         string token = CreateToken(user);
 
-        return Ok(token);
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = DateTime.Now.AddDays(1),
+            Secure = true,
+            SameSite = SameSiteMode.Strict
+        };
+
+        Response.Cookies.Append("jwt-token-online-movies", token, cookieOptions);
+
+        var userData = new { id = user.UserId, username = user.Username, role = user.Role };
+        return Ok(new ApiResponse<object>
+        {
+            Status = "Успешно",
+            Message = "Вход в систему выполнен",
+            Data = userData
+        });
     }
 
-    // Этот метод должен быть доступен только авторизованным пользователям
     [HttpPost("change-password")]
     [Authorize]
     public async Task<IActionResult> ChangePassword(UserChangePasswordDto request)
@@ -84,18 +114,54 @@ public class AuthController : ControllerBase
 
         if (user == null)
         {
-            return NotFound("Пользователь не найден.");
+            return NotFound(new ApiResponse { Status = "Ошибка", Message = "Пользователь не найден." });
         }
 
         if (!BCrypt.Net.BCrypt.Verify(request.OldPassword, user.HashedPassword))
         {
-            return BadRequest("Неверный старый пароль.");
+            return BadRequest(new ApiResponse { Status = "Ошибка", Message = "Неверный старый пароль." });
         }
 
-        user.HashedPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword); ;
+        user.HashedPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
         await _context.SaveChangesAsync();
 
-        return Ok("Пароль успешно изменен.");
+        var userData = new { id = user.UserId, username = user.Username, role = user.Role };
+        return Ok(new ApiResponse<object>
+        {
+            Status = "Успешно",
+            Message = "Пароль успешно изменен",
+            Data = userData
+        });
+    }
+
+    [HttpGet("check-auth")]
+    [Authorize]
+    public IActionResult CheckAuth()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var username = User.FindFirstValue(ClaimTypes.Name);
+        var userRole = User.FindFirstValue(ClaimTypes.Role);
+
+        var userData = new { id = userId, username = username, role = userRole };
+        return Ok(new ApiResponse<object>
+        {
+            Status = "Успешно",
+            Message = "Вы активны в системе",
+            Data = userData
+        });
+    }
+
+    [HttpPost("logout")]
+    [Authorize]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("jwt-token-online-movies");
+
+        return Ok(new ApiResponse
+        {
+            Status = "Успешно",
+            Message = "Вы успешно вышли из системы"
+        });
     }
 
     private string CreateToken(User user)
@@ -104,7 +170,7 @@ public class AuthController : ControllerBase
         {
             new Claim(ClaimTypes.Name, user.Username),
             new Claim(ClaimTypes.Role, user.Role),
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()) 
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
