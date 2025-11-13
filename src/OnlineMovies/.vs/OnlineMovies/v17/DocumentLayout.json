@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\parom\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\onlinemovies\\src\\onlinemovies\\controllers\\countriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:controllers\\countriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\parom\\onedrive\\\u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\github\\onlinemovies\\src\\onlinemovies\\controllers\\tagscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:controllers\\tagscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -75,19 +79,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "CountriesController.cs",
+              "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Controllers\\CountriesController.cs",
+              "RelativeDocumentMoniker": "Controllers\\CountriesController.cs",
+              "ToolTip": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Controllers\\CountriesController.cs",
+              "RelativeToolTip": "Controllers\\CountriesController.cs",
+              "ViewState": "AgIAAGQAAAAAAAAAAAAcwHYAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-13T19:21:42.983Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "TagsController.cs",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Controllers\\TagsController.cs",
               "RelativeDocumentMoniker": "Controllers\\TagsController.cs",
               "ToolTip": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Controllers\\TagsController.cs",
               "RelativeToolTip": "Controllers\\TagsController.cs",
-              "ViewState": "AgIAAHAAAAAAAAAAAAAqwIcAAAAhAAAAAAAAAA==",
+              "ViewState": "AgIAAGQAAAAAAAAAAAAqwIoAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-13T18:25:12.694Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Genre.cs",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Models\\Genre.cs",
               "RelativeDocumentMoniker": "Models\\Genre.cs",
@@ -95,12 +112,11 @@
               "RelativeToolTip": "Models\\Genre.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-13T17:46:28.129Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-13T17:46:28.129Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "GenresController.cs",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Controllers\\GenresController.cs",
               "RelativeDocumentMoniker": "Controllers\\GenresController.cs",
@@ -108,12 +124,11 @@
               "RelativeToolTip": "Controllers\\GenresController.cs",
               "ViewState": "AgIAAB8AAAAAAAAAAAAAAI4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-13T17:37:39.617Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-13T17:37:39.617Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "ApiResponse.cs",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Responses\\ApiResponse.cs",
               "RelativeDocumentMoniker": "Responses\\ApiResponse.cs",
@@ -125,7 +140,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "UserMovie.cs",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Models\\UserMovie.cs",
               "RelativeDocumentMoniker": "Models\\UserMovie.cs",
@@ -137,7 +152,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "AuthController.cs",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
@@ -145,12 +160,11 @@
               "RelativeToolTip": "Controllers\\AuthController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAKkAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-12T18:49:34.458Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-12T18:49:34.458Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Database\\AppDbContext.cs",
               "RelativeDocumentMoniker": "Database\\AppDbContext.cs",
@@ -162,7 +176,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
@@ -174,7 +188,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "appsettings.Development.json",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\appsettings.Development.json",
               "RelativeDocumentMoniker": "appsettings.Development.json",
@@ -186,7 +200,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "OnlineMovies.http",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\OnlineMovies.http",
               "RelativeDocumentMoniker": "OnlineMovies.http",
@@ -198,7 +212,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "UserChangePasswordDto.cs",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\DTO\\UserChangePasswordDto.cs",
               "RelativeDocumentMoniker": "DTO\\UserChangePasswordDto.cs",
@@ -210,7 +224,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "UserRegisterDto.cs",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\DTO\\UserRegisterDto.cs",
               "RelativeDocumentMoniker": "DTO\\UserRegisterDto.cs",
@@ -222,7 +236,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "UserLoginDto.cs",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\DTO\\UserLoginDto.cs",
               "RelativeDocumentMoniker": "DTO\\UserLoginDto.cs",
@@ -234,7 +248,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "OnlineMovies",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\OnlineMovies.csproj",
               "RelativeDocumentMoniker": "OnlineMovies.csproj",
@@ -245,7 +259,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\parom\\OneDrive\\\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B\\GitHub\\OnlineMovies\\src\\OnlineMovies\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
