@@ -23,9 +23,16 @@ public class MoviesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<IEnumerable<MovieResponseDto>>>> GetMovies()
+    public async Task<ActionResult<ApiResponse<IEnumerable<MovieResponseDto>>>> GetMovies([FromQuery] MovieFilterQuery? filter)
     {
-        var movies = await LoadMoviesQuery()
+        var query = LoadMoviesQuery();
+
+        if (filter != null)
+        {
+            query = ApplyFilters(query, filter);
+        }
+
+        var movies = await query
             .OrderBy(m => m.MovieId)
             .ToListAsync();
 
@@ -44,6 +51,39 @@ public class MoviesController : ControllerBase
     {
         var movie = await LoadMoviesQuery()
             .FirstOrDefaultAsync(m => m.MovieId == id);
+
+        if (movie == null)
+        {
+            return NotFound(new ApiResponse
+            {
+                Status = "Ошибка",
+                Message = "Фильм не найден"
+            });
+        }
+
+        return Ok(new ApiResponse<MovieResponseDto>
+        {
+            Status = "Успешно",
+            Message = "Фильм найден",
+            Data = MapMovie(movie)
+        });
+    }
+
+    [HttpGet("by-title/{title}")]
+    public async Task<ActionResult<ApiResponse<MovieResponseDto>>> GetMovieByTitle(string title)
+    {
+        var trimmedTitle = title?.Trim();
+        if (string.IsNullOrWhiteSpace(trimmedTitle))
+        {
+            return BadRequest(new ApiResponse
+            {
+                Status = "Ошибка",
+                Message = "Название фильма не может быть пустым."
+            });
+        }
+
+        var movie = await LoadMoviesQuery()
+            .FirstOrDefaultAsync(m => m.Title == trimmedTitle);
 
         if (movie == null)
         {
@@ -204,6 +244,35 @@ public class MoviesController : ControllerBase
             .Include(m => m.MovieCountries)
                 .ThenInclude(mc => mc.Country)
             .Include(m => m.Trailers);
+    }
+
+    private static IQueryable<Movie> ApplyFilters(IQueryable<Movie> query, MovieFilterQuery filter)
+    {
+        var trimmedTitle = filter.Title?.Trim();
+        if (!string.IsNullOrWhiteSpace(trimmedTitle))
+        {
+            query = query.Where(m => EF.Functions.Like(m.Title, $"%{trimmedTitle}%"));
+        }
+
+        if (filter.GenreIds?.Any() == true)
+        {
+            var genreIds = filter.GenreIds.Distinct().ToList();
+            query = query.Where(m => m.MovieGenres.Any(mg => genreIds.Contains(mg.GenreId)));
+        }
+
+        if (filter.TagIds?.Any() == true)
+        {
+            var tagIds = filter.TagIds.Distinct().ToList();
+            query = query.Where(m => m.MovieTags.Any(mt => tagIds.Contains(mt.TagId)));
+        }
+
+        if (filter.CountryIds?.Any() == true)
+        {
+            var countryIds = filter.CountryIds.Distinct().ToList();
+            query = query.Where(m => m.MovieCountries.Any(mc => countryIds.Contains(mc.CountryId)));
+        }
+
+        return query;
     }
 
     private static MovieResponseDto MapMovie(Movie movie)
