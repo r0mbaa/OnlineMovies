@@ -19,3 +19,4 @@ public class UserGenreInterest
     public float Weight { get; set; } = 1.0f;
 }
 
+

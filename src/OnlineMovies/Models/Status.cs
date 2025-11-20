@@ -19,3 +19,4 @@ public class Status
     public ICollection<UserMovie> UserMovies { get; set; } = new List<UserMovie>();
 }
 
+

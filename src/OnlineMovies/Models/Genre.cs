@@ -20,3 +20,4 @@ public class Genre
     public ICollection<UserGenreInterest> UserGenreInterests { get; set; } = new List<UserGenreInterest>();
 }
 
+
