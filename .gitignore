@@ -24,3 +24,8 @@ dist-ssr
 
 #Для базы данных и других настроек в проекте
 *.Development.json
+
+*.jpg
+*.jpeg
+*.png
+*.webp

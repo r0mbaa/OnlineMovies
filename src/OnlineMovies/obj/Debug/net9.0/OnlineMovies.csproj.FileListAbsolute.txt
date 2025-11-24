@@ -63,3 +63,4 @@ C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\
 C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\OnlineMovies.staticwebassets.runtime.json

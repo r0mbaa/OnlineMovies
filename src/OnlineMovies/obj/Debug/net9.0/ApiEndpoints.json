@@ -647,6 +647,156 @@
     ]
   },
   {
+    "ContainingType": "OnlineMovies.Controllers.UserMoviesController",
+    "Method": "AddOrUpdateUserMovie",
+    "RelativePath": "api/user/movies",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "OnlineMovies.DTO.UserMovieRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "OnlineMovies.Responses.ApiResponse\u00601[[OnlineMovies.DTO.UserMovieResponseDto, OnlineMovies, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "OnlineMovies.Controllers.UserMoviesController",
+    "Method": "RemoveFromList",
+    "RelativePath": "api/user/movies/{movieId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "movieId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "OnlineMovies.Responses.ApiResponse\u00601[[OnlineMovies.DTO.UserMovieResponseDto, OnlineMovies, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "OnlineMovies.Controllers.UserMoviesController",
+    "Method": "RateMovie",
+    "RelativePath": "api/user/movies/rate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "OnlineMovies.DTO.UserMovieRateRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "OnlineMovies.Responses.ApiResponse\u00601[[OnlineMovies.DTO.UserMovieResponseDto, OnlineMovies, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "OnlineMovies.Controllers.UserProfileController",
+    "Method": "GetProfile",
+    "RelativePath": "api/user/profile",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "OnlineMovies.Responses.ApiResponse\u00601[[OnlineMovies.DTO.UserProfileResponseDto, OnlineMovies, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "OnlineMovies.Controllers.UserProfileController",
+    "Method": "UploadAvatar",
+    "RelativePath": "api/user/profile/avatar",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Avatar",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "OnlineMovies.Responses.ApiResponse\u00601[[OnlineMovies.DTO.UserProfileResponseDto, OnlineMovies, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "OnlineMovies.Controllers.UserProfileController",
+    "Method": "UpdateDescription",
+    "RelativePath": "api/user/profile/description",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "OnlineMovies.DTO.UserProfileDescriptionDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "OnlineMovies.Responses.ApiResponse\u00601[[OnlineMovies.DTO.UserProfileResponseDto, OnlineMovies, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "OnlineMovies.Controllers.UsersController",
     "Method": "GetUsers",
     "RelativePath": "api/Users",
