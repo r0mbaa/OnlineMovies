@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineMovies.Database;
 using OnlineMovies.DTO;
+using OnlineMovies.Mappers;
 using OnlineMovies.Models;
 using OnlineMovies.Responses;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ public class MoviesController : ControllerBase
             .OrderBy(m => m.MovieId)
             .ToListAsync();
 
-        var movieDtos = movies.Select(MapMovie).ToList();
+        var movieDtos = movies.Select(MovieMapper.Map).ToList();
 
         return Ok(new ApiResponse<IEnumerable<MovieResponseDto>>
         {
@@ -65,7 +66,7 @@ public class MoviesController : ControllerBase
         {
             Status = "Успешно",
             Message = "Фильм найден",
-            Data = MapMovie(movie)
+            Data = MovieMapper.Map(movie)
         });
     }
 
@@ -98,7 +99,31 @@ public class MoviesController : ControllerBase
         {
             Status = "Успешно",
             Message = "Фильм найден",
-            Data = MapMovie(movie)
+            Data = MovieMapper.Map(movie)
+        });
+    }
+
+    [HttpGet("random")]
+    public async Task<ActionResult<ApiResponse<MovieResponseDto>>> GetRandomMovie()
+    {
+        var movie = await LoadMoviesQuery()
+            .OrderBy(_ => EF.Functions.Random())
+            .FirstOrDefaultAsync();
+
+        if (movie == null)
+        {
+            return NotFound(new ApiResponse
+            {
+                Status = "Ошибка",
+                Message = "В базе нет фильмов."
+            });
+        }
+
+        return Ok(new ApiResponse<MovieResponseDto>
+        {
+            Status = "Успешно",
+            Message = "Случайный фильм получен",
+            Data = MovieMapper.Map(movie)
         });
     }
 
@@ -148,7 +173,7 @@ public class MoviesController : ControllerBase
         {
             Status = "Успешно",
             Message = "Фильм успешно создан",
-            Data = MapMovie(createdMovie)
+            Data = MovieMapper.Map(createdMovie)
         });
     }
 
@@ -206,7 +231,7 @@ public class MoviesController : ControllerBase
         {
             Status = "Успешно",
             Message = "Фильм успешно обновлен",
-            Data = MapMovie(updatedMovie)
+            Data = MovieMapper.Map(updatedMovie)
         });
     }
 
@@ -273,54 +298,6 @@ public class MoviesController : ControllerBase
         }
 
         return query;
-    }
-
-    private static MovieResponseDto MapMovie(Movie movie)
-    {
-        return new MovieResponseDto
-        {
-            MovieId = movie.MovieId,
-            Title = movie.Title,
-            Description = movie.Description,
-            ReleaseYear = movie.ReleaseYear,
-            Director = movie.Director,
-            PosterUrl = movie.PosterUrl,
-            DurationMinutes = movie.DurationMinutes,
-            Genres = movie.MovieGenres?
-                .Where(mg => mg.Genre != null)
-                .Select(mg => new LookupDto
-                {
-                    Id = mg.GenreId,
-                    Name = mg.Genre!.Name
-                })
-                .OrderBy(g => g.Name)
-                .ToList() ?? new List<LookupDto>(),
-            Tags = movie.MovieTags?
-                .Where(mt => mt.Tag != null)
-                .Select(mt => new LookupDto
-                {
-                    Id = mt.TagId,
-                    Name = mt.Tag!.Name
-                })
-                .OrderBy(t => t.Name)
-                .ToList() ?? new List<LookupDto>(),
-            Countries = movie.MovieCountries?
-                .Where(mc => mc.Country != null)
-                .Select(mc => new LookupDto
-                {
-                    Id = mc.CountryId,
-                    Name = mc.Country!.Name
-                })
-                .OrderBy(c => c.Name)
-                .ToList() ?? new List<LookupDto>(),
-            Trailers = movie.Trailers?
-                .Select(trailer => new TrailerDto
-                {
-                    Id = trailer.TrailerId,
-                    Url = trailer.TrailerUrl
-                })
-                .ToList() ?? new List<TrailerDto>()
-        };
     }
 
     private async Task<string?> ValidateRequestAsync(MovieCreateUpdateDto request)
