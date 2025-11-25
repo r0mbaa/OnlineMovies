@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 [ApiController]
 [Route("api/user/profile")]
@@ -41,12 +42,25 @@ public class UserProfileController : ControllerBase
         var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
         if (user == null)
         {
-            return Unauthorized(new ApiResponse<UserProfileResponseDto>
-            {
-                Status = "Ошибка",
-                Message = "Пользователь не найден.",
-                Data = null
-            });
+            return BuildProfileNotFoundResponse(true);
+        }
+
+        return Ok(new ApiResponse<UserProfileResponseDto>
+        {
+            Status = "Успешно",
+            Message = "Данные профиля получены",
+            Data = MapToResponse(user)
+        });
+    }
+
+    [HttpGet("{userId:int}")]
+    [Authorize(Roles = "admin")]
+    public async Task<ActionResult<ApiResponse<UserProfileResponseDto>>> GetProfileById(int userId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+        if (user == null)
+        {
+            return BuildProfileNotFoundResponse(false);
         }
 
         return Ok(new ApiResponse<UserProfileResponseDto>
@@ -76,15 +90,86 @@ public class UserProfileController : ControllerBase
             return errorResult!;
         }
 
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-        if (user == null)
+        return await UpdateDescriptionInternal(userId, request, true);
+    }
+
+    [HttpPut("{userId:int}/description")]
+    [Authorize(Roles = "admin")]
+    public async Task<ActionResult<ApiResponse<UserProfileResponseDto>>> UpdateDescriptionForUser(int userId, UserProfileDescriptionDto request)
+    {
+        if (!ModelState.IsValid)
         {
-            return Unauthorized(new ApiResponse<UserProfileResponseDto>
+            var error = ExtractModelStateError();
+            return BadRequest(new ApiResponse<UserProfileResponseDto>
             {
                 Status = "Ошибка",
-                Message = "Пользователь не найден.",
+                Message = error ?? "Переданы некорректные данные.",
                 Data = null
             });
+        }
+
+        return await UpdateDescriptionInternal(userId, request, false);
+    }
+
+    [HttpPost("avatar")]
+    [RequestSizeLimit(MaxAvatarSizeBytes)]
+    public async Task<ActionResult<ApiResponse<UserProfileResponseDto>>> UploadAvatar([FromForm] UserAvatarUploadDto request)
+    {
+        if (!TryGetUserId(out var userId, out var errorResult))
+        {
+            return errorResult!;
+        }
+
+        var validationError = ValidateAvatarRequest(request);
+        if (validationError != null)
+        {
+            return validationError;
+        }
+
+        return await UploadAvatarInternal(userId, request.Avatar!, true);
+    }
+
+    [HttpPost("{userId:int}/avatar")]
+    [Authorize(Roles = "admin")]
+    [RequestSizeLimit(MaxAvatarSizeBytes)]
+    public async Task<ActionResult<ApiResponse<UserProfileResponseDto>>> UploadAvatarForUser(int userId, [FromForm] UserAvatarUploadDto request)
+    {
+        var validationError = ValidateAvatarRequest(request);
+        if (validationError != null)
+        {
+            return validationError;
+        }
+
+        return await UploadAvatarInternal(userId, request.Avatar!, false);
+    }
+
+    private bool TryGetUserId(out int userId, out ActionResult<ApiResponse<UserProfileResponseDto>>? errorResult)
+    {
+        userId = 0;
+        errorResult = null;
+
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userIdValue) || !int.TryParse(userIdValue, out userId))
+        {
+            errorResult = Unauthorized(new ApiResponse<UserProfileResponseDto>
+            {
+                Status = "Ошибка",
+                Message = "Не удалось определить пользователя.",
+                Data = null
+            });
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task<ActionResult<ApiResponse<UserProfileResponseDto>>> UpdateDescriptionInternal(int targetUserId, UserProfileDescriptionDto request, bool treatMissingAsUnauthorized)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == targetUserId);
+        if (user == null)
+        {
+            return BuildProfileNotFoundResponse(treatMissingAsUnauthorized);
         }
 
         user.ProfileDescription = string.IsNullOrWhiteSpace(request.ProfileDescription)
@@ -101,15 +186,53 @@ public class UserProfileController : ControllerBase
         });
     }
 
-    [HttpPost("avatar")]
-    [RequestSizeLimit(MaxAvatarSizeBytes)]
-    public async Task<ActionResult<ApiResponse<UserProfileResponseDto>>> UploadAvatar([FromForm] UserAvatarUploadDto request)
+    private async Task<ActionResult<ApiResponse<UserProfileResponseDto>>> UploadAvatarInternal(int targetUserId, IFormFile avatarFile, bool treatMissingAsUnauthorized)
     {
-        if (!TryGetUserId(out var userId, out var errorResult))
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == targetUserId);
+        if (user == null)
         {
-            return errorResult!;
+            return BuildProfileNotFoundResponse(treatMissingAsUnauthorized);
         }
 
+        var uploadsFolder = Path.Combine(GetWebRoot(), "avatars");
+        Directory.CreateDirectory(uploadsFolder);
+
+        var extension = Path.GetExtension(avatarFile.FileName)?.ToLowerInvariant() ?? ".jpg";
+        var fileName = $"avatar_user_{targetUserId}_{Guid.NewGuid():N}{extension}";
+        var filePath = Path.Combine(uploadsFolder, fileName);
+
+        using (var stream = System.IO.File.Create(filePath))
+        {
+            await avatarFile.CopyToAsync(stream);
+        }
+
+        DeleteOldAvatarIfNeeded(user.AvatarUrl);
+        user.AvatarUrl = $"/avatars/{fileName}";
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new ApiResponse<UserProfileResponseDto>
+        {
+            Status = "Успешно",
+            Message = "Аватар обновлён",
+            Data = MapToResponse(user)
+        });
+    }
+
+    private ActionResult<ApiResponse<UserProfileResponseDto>> BuildProfileNotFoundResponse(bool treatAsUnauthorized)
+    {
+        var response = new ApiResponse<UserProfileResponseDto>
+        {
+            Status = "Ошибка",
+            Message = "Пользователь не найден.",
+            Data = null
+        };
+
+        return treatAsUnauthorized ? Unauthorized(response) : NotFound(response);
+    }
+
+    private ActionResult<ApiResponse<UserProfileResponseDto>>? ValidateAvatarRequest(UserAvatarUploadDto request)
+    {
         if (!ModelState.IsValid || request.Avatar == null)
         {
             return BadRequest(new ApiResponse<UserProfileResponseDto>
@@ -141,60 +264,7 @@ public class UserProfileController : ControllerBase
             });
         }
 
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-        if (user == null)
-        {
-            return Unauthorized(new ApiResponse<UserProfileResponseDto>
-            {
-                Status = "Ошибка",
-                Message = "Пользователь не найден.",
-                Data = null
-            });
-        }
-
-        var uploadsFolder = Path.Combine(GetWebRoot(), "avatars");
-        Directory.CreateDirectory(uploadsFolder);
-
-        var fileName = $"avatar_user_{userId}_{Guid.NewGuid():N}{extension}";
-        var filePath = Path.Combine(uploadsFolder, fileName);
-
-        using (var stream = System.IO.File.Create(filePath))
-        {
-            await request.Avatar.CopyToAsync(stream);
-        }
-
-        DeleteOldAvatarIfNeeded(user.AvatarUrl);
-        user.AvatarUrl = $"/avatars/{fileName}";
-
-        await _context.SaveChangesAsync();
-
-        return Ok(new ApiResponse<UserProfileResponseDto>
-        {
-            Status = "Успешно",
-            Message = "Аватар обновлён",
-            Data = MapToResponse(user)
-        });
-    }
-
-    private bool TryGetUserId(out int userId, out ActionResult<ApiResponse<UserProfileResponseDto>>? errorResult)
-    {
-        userId = 0;
-        errorResult = null;
-
-        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrWhiteSpace(userIdValue) || !int.TryParse(userIdValue, out userId))
-        {
-            errorResult = Unauthorized(new ApiResponse<UserProfileResponseDto>
-            {
-                Status = "Ошибка",
-                Message = "Не удалось определить пользователя.",
-                Data = null
-            });
-
-            return false;
-        }
-
-        return true;
+        return null;
     }
 
     private void DeleteOldAvatarIfNeeded(string? avatarUrl)

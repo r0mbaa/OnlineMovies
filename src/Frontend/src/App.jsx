@@ -10,6 +10,7 @@ import PublicProfile from './pages/PublicProfile'
 import RandomMovie from './pages/RandomMovie'
 import RecommendedMovie from './pages/RecommendedMovie'
 import Users from './pages/Users'
+import AdminMovieEditor from './pages/AdminMovieEditor'
 import { authApi, directoriesApi, profileApi, userMoviesApi } from './api'
 import './App.css'
 
@@ -149,6 +150,8 @@ function App() {
               <Route path="users" element={<Users />} />
               <Route path="random" element={<RandomMovie />} />
               <Route path="recommendations" element={<RecommendedMovie user={user} />} />
+              <Route path="admin/movies/new" element={<AdminMovieEditor user={user} />} />
+              <Route path="admin/movies/:id/edit" element={<AdminMovieEditor user={user} />} />
               <Route
                 path="movies/:id"
                 element={
@@ -176,7 +179,7 @@ function App() {
                   />
                 }
               />
-              <Route path="profiles/:username" element={<PublicProfile statuses={statuses} />} />
+              <Route path="profiles/:username" element={<PublicProfile statuses={statuses} currentUser={user} />} />
               <Route path="*" element={<Home />} />
             </Route>
           </Routes>

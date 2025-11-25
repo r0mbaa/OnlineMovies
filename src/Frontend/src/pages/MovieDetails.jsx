@@ -13,6 +13,8 @@ const MovieDetails = ({ user, statuses, userMovies, onAddToList, onRemoveFromLis
   const [selectedStatusId, setSelectedStatusId] = useState('')
   const [rating, setRating] = useState('')
   const [comment, setComment] = useState('')
+  const [adminActionMessage, setAdminActionMessage] = useState('')
+  const [deletingMovie, setDeletingMovie] = useState(false)
 
   const entry = useMemo(() => userMovies.find((item) => item.movieId === movieId), [userMovies, movieId])
 
@@ -97,6 +99,27 @@ const MovieDetails = ({ user, statuses, userMovies, onAddToList, onRemoveFromLis
     })
   }
 
+  const handleDeleteMovie = async () => {
+    if (!user?.role || user.role !== 'admin') {
+      return
+    }
+    const confirmed = window.confirm(`Удалить фильм «${movie.title}»? Действие необратимо.`)
+    if (!confirmed) {
+      return
+    }
+
+    setDeletingMovie(true)
+    setAdminActionMessage('')
+    try {
+      await moviesApi.deleteMovie(movieId)
+      navigate('/')
+    } catch (err) {
+      setAdminActionMessage(err.message || 'Не удалось удалить фильм.')
+    } finally {
+      setDeletingMovie(false)
+    }
+  }
+
   return (
     <section className="movie-detail">
       <button type="button" className="ghost-action back-button" onClick={() => navigate(-1)}>
@@ -143,7 +166,18 @@ const MovieDetails = ({ user, statuses, userMovies, onAddToList, onRemoveFromLis
             <button type="button" className="ghost-action" onClick={() => navigate('/')}>
               На главную
             </button>
+            {user?.role === 'admin' && (
+              <>
+                <button type="button" className="ghost-action" onClick={() => navigate(`/admin/movies/${movieId}/edit`)}>
+                  Редактировать
+                </button>
+                <button type="button" className="profile-remove" onClick={handleDeleteMovie} disabled={deletingMovie}>
+                  {deletingMovie ? 'Удаляем...' : 'Удалить фильм'}
+                </button>
+              </>
+            )}
           </div>
+          {adminActionMessage && <p className="error-text">{adminActionMessage}</p>}
 
           <div className="detail-lists">
             <h2>Управление фильмом</h2>

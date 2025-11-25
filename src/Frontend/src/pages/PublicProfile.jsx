@@ -1,8 +1,14 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { usersApi } from '../api'
+import { profileApi, usersApi } from '../api'
+import { API_BASE_URL } from '../api/client'
 
-const PublicProfile = ({ statuses }) => {
+const resolveAvatarUrl = (avatarUrl) => {
+  if (!avatarUrl) return null
+  return avatarUrl.startsWith('http') ? avatarUrl : `${API_BASE_URL}${avatarUrl}`
+}
+
+const PublicProfile = ({ statuses, currentUser }) => {
   const { username } = useParams()
   const navigate = useNavigate()
   const [profile, setProfile] = useState(null)
@@ -10,6 +16,16 @@ const PublicProfile = ({ statuses }) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [activeStatusId, setActiveStatusId] = useState(statuses[0]?.statusId?.toString() || '')
+  const [descriptionDraft, setDescriptionDraft] = useState('')
+  const [profileFeedback, setProfileFeedback] = useState('')
+  const [savingDescription, setSavingDescription] = useState(false)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const [deletingUser, setDeletingUser] = useState(false)
+  const [identityForm, setIdentityForm] = useState({ username: '', email: '', role: 'user' })
+  const [identityLoading, setIdentityLoading] = useState(false)
+  const [identityMessage, setIdentityMessage] = useState('')
+  const fileInputRef = useRef(null)
+  const canEdit = currentUser?.role === 'admin'
 
   useEffect(() => {
     setActiveStatusId((prev) => {
@@ -33,6 +49,7 @@ const PublicProfile = ({ statuses }) => {
         ])
         if (!isMounted) return
         setProfile(profileData)
+        setDescriptionDraft(profileData.profileDescription || '')
         setMovies(moviesData || [])
       } catch (err) {
         if (!isMounted) return
@@ -49,6 +66,40 @@ const PublicProfile = ({ statuses }) => {
       isMounted = false
     }
   }, [username])
+
+  useEffect(() => {
+    if (!canEdit || !profile?.userId) {
+      return
+    }
+
+    let ignore = false
+
+    const loadIdentity = async () => {
+      try {
+        setIdentityLoading(true)
+        setIdentityMessage('')
+        const adminDetails = await usersApi.getUser(profile.userId)
+        if (ignore) return
+        setIdentityForm({
+          username: adminDetails.username || '',
+          email: adminDetails.email || '',
+          role: adminDetails.role || 'user'
+        })
+      } catch (err) {
+        if (ignore) return
+        setIdentityMessage(err.message || 'Не удалось загрузить данные пользователя.')
+      } finally {
+        if (!ignore) {
+          setIdentityLoading(false)
+        }
+      }
+    }
+
+    loadIdentity()
+    return () => {
+      ignore = true
+    }
+  }, [canEdit, profile?.userId])
 
   const groupedByStatus = useMemo(() => {
     return statuses.reduce((acc, status) => {
@@ -90,6 +141,93 @@ const PublicProfile = ({ statuses }) => {
     )
   }
 
+  const handleAdminDescriptionSave = async (event) => {
+    event.preventDefault()
+    if (!canEdit || !profile) return
+    setSavingDescription(true)
+    setProfileFeedback('')
+    try {
+      const updated = await profileApi.updateDescriptionForUser(profile.userId, { profileDescription: descriptionDraft })
+      setProfile((prev) => (prev ? { ...prev, profileDescription: updated.profileDescription } : updated))
+      setProfileFeedback('Описание обновлено')
+    } catch (err) {
+      setProfileFeedback(err.message || 'Не удалось сохранить описание.')
+    } finally {
+      setSavingDescription(false)
+    }
+  }
+
+  const handleAdminAvatarChange = async (event) => {
+    const file = event.target.files?.[0]
+    if (!file || !canEdit || !profile) return
+    setAvatarUploading(true)
+    setProfileFeedback('')
+    try {
+      const updated = await profileApi.uploadAvatarForUser(profile.userId, file)
+      setProfile((prev) => (prev ? { ...prev, avatarUrl: updated.avatarUrl } : updated))
+      setProfileFeedback('Аватар обновлён')
+    } catch (err) {
+      setProfileFeedback(err.message || 'Не удалось загрузить аватар.')
+    } finally {
+      setAvatarUploading(false)
+    }
+  }
+
+  const handleIdentityChange = (event) => {
+    const { name, value } = event.target
+    setIdentityForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleIdentitySubmit = async (event) => {
+    event.preventDefault()
+    if (!canEdit || !profile) return
+    setIdentityLoading(true)
+    setIdentityMessage('')
+    try {
+      const payload = {
+        username: identityForm.username.trim(),
+        email: identityForm.email.trim(),
+        role: identityForm.role
+      }
+      const updated = await usersApi.updateUser(profile.userId, payload)
+      setProfile((prev) => (prev ? { ...prev, username: updated.username, role: updated.role } : prev))
+      setIdentityForm({
+        username: updated.username,
+        email: updated.email,
+        role: updated.role
+      })
+      setIdentityMessage('Данные обновлены')
+      if (updated.username && updated.username !== profile.username) {
+        navigate(`/profiles/${updated.username}`, { replace: true })
+      }
+    } catch (err) {
+      setIdentityMessage(err.message || 'Не удалось обновить данные.')
+    } finally {
+      setIdentityLoading(false)
+    }
+  }
+
+  const avatarUrl = resolveAvatarUrl(profile?.avatarUrl)
+
+  const handleDeleteUser = async () => {
+    if (!canEdit || !profile) return
+    const confirmed = window.confirm(`Удалить пользователя «${profile.username}»? Его данные будут потеряны.`)
+    if (!confirmed) {
+      return
+    }
+
+    setDeletingUser(true)
+    setProfileFeedback('')
+    try {
+      await usersApi.deleteUser(profile.userId)
+      navigate('/users')
+    } catch (err) {
+      setProfileFeedback(err.message || 'Не удалось удалить пользователя.')
+    } finally {
+      setDeletingUser(false)
+    }
+  }
+
   return (
     <section className="profile-page">
       <div className="profile-top">
@@ -97,20 +235,87 @@ const PublicProfile = ({ statuses }) => {
           <div className="profile-avatar-section">
             <div className="profile-avatar-frame">
               <div className="profile-avatar-preview">
-                {profile.avatarUrl ? <img src={profile.avatarUrl} alt={profile.username} /> : <span>{profile.username?.charAt(0).toUpperCase()}</span>}
+                {avatarUrl ? <img src={avatarUrl} alt={profile.username} /> : <span>{profile.username?.charAt(0).toUpperCase()}</span>}
               </div>
             </div>
             <span className="profile-public-label">Публичный профиль</span>
+            {canEdit && (
+              <div className="profile-avatar-actions">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={handleAdminAvatarChange}
+                  hidden
+                  disabled={avatarUploading}
+                />
+                <button type="button" className="ghost-action" onClick={() => fileInputRef.current?.click()} disabled={avatarUploading}>
+                  {avatarUploading ? 'Загрузка...' : 'Изменить аватар'}
+                </button>
+              </div>
+            )}
           </div>
           <div className="profile-details">
             <div className="profile-identity">
               <h1>{profile.username}</h1>
               <small>Роль: {profile.role}</small>
             </div>
-            <div className="profile-description-static">
-              <h2>Описание профиля</h2>
-              <p>{profile.profileDescription || 'Пользователь ещё ничего о себе не рассказал.'}</p>
-            </div>
+            {canEdit ? (
+              <form className="profile-description-form" onSubmit={handleAdminDescriptionSave}>
+                <label htmlFor="adminProfileDescription">Описание профиля</label>
+                <textarea
+                  id="adminProfileDescription"
+                  value={descriptionDraft}
+                  onChange={(event) => setDescriptionDraft(event.target.value)}
+                  rows="4"
+                />
+                <div className="profile-description-actions">
+                  <button type="submit" className="primary-action" disabled={savingDescription}>
+                    {savingDescription ? 'Сохраняем...' : 'Сохранить'}
+                  </button>
+                  {profileFeedback && <p className="profile-feedback">{profileFeedback}</p>}
+                </div>
+              </form>
+            ) : (
+              <div className="profile-description-static">
+                <h2>Описание профиля</h2>
+                <p>{profile.profileDescription || 'Пользователь ещё ничего о себе не рассказал.'}</p>
+              </div>
+            )}
+            {canEdit && (
+              <form className="profile-identity-form" onSubmit={handleIdentitySubmit}>
+                <div className="profile-identity-grid">
+                  <label>
+                    <span>Никнейм</span>
+                    <input name="username" value={identityForm.username} onChange={handleIdentityChange} required />
+                  </label>
+                  <label>
+                    <span>Email</span>
+                    <input name="email" type="email" value={identityForm.email} onChange={handleIdentityChange} required />
+                  </label>
+                  <label>
+                    <span>Роль</span>
+                    <select name="role" value={identityForm.role} onChange={handleIdentityChange}>
+                      <option value="user">Пользователь</option>
+                      <option value="admin">Администратор</option>
+                    </select>
+                  </label>
+                </div>
+                <div className="profile-description-actions">
+                  <button type="submit" className="ghost-action" disabled={identityLoading}>
+                    {identityLoading ? 'Обновляем...' : 'Обновить данные'}
+                  </button>
+                  {identityMessage && <p className="profile-feedback">{identityMessage}</p>}
+                </div>
+              </form>
+            )}
+            {canEdit && (
+              <div className="profile-description-actions">
+                <button type="button" className="profile-remove" onClick={handleDeleteUser} disabled={deletingUser}>
+                  {deletingUser ? 'Удаляем…' : 'Удалить пользователя'}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

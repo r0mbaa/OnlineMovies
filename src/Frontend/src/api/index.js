@@ -37,18 +37,28 @@ export const authApi = {
 
 export const profileApi = {
   getProfile: () => request('/api/user/profile'),
+  getProfileById: (userId) => request(`/api/user/profile/${userId}`),
   updateDescription: (payload) => request('/api/user/profile/description', { method: 'PUT', body: payload }),
+  updateDescriptionForUser: (userId, payload) => request(`/api/user/profile/${userId}/description`, { method: 'PUT', body: payload }),
   uploadAvatar: (file) => {
     const formData = new FormData()
     formData.append('avatar', file)
     return request('/api/user/profile/avatar', { method: 'POST', body: formData })
+  },
+  uploadAvatarForUser: (userId, file) => {
+    const formData = new FormData()
+    formData.append('avatar', file)
+    return request(`/api/user/profile/${userId}/avatar`, { method: 'POST', body: formData })
   }
 }
 
 export const moviesApi = {
   getMovies: (params) => request(`/api/movies${buildQueryString(params)}`),
   getMovie: (id) => request(`/api/movies/${id}`),
-  getRandomMovie: () => request('/api/movies/random')
+  getRandomMovie: () => request('/api/movies/random'),
+  createMovie: (payload) => request('/api/movies', { method: 'POST', body: payload }),
+  updateMovie: (id, payload) => request(`/api/movies/${id}`, { method: 'PUT', body: payload }),
+  deleteMovie: (id) => request(`/api/movies/${id}`, { method: 'DELETE' })
 }
 
 export const recommendationsApi = {
@@ -72,7 +82,10 @@ export const userMoviesApi = {
 export const usersApi = {
   searchProfiles: (query) => request(`/api/users/lookup${buildQueryString({ query })}`),
   getPublicProfile: (username) => request(`/api/users/public/${encodeURIComponent(username)}`),
-  getPublicMovies: (username) => request(`/api/user/movies/public/${encodeURIComponent(username)}`)
+  getPublicMovies: (username) => request(`/api/user/movies/public/${encodeURIComponent(username)}`),
+  getUser: (id) => request(`/api/users/${id}`),
+  updateUser: (id, payload) => request(`/api/users/${id}`, { method: 'PUT', body: payload }),
+  deleteUser: (id) => request(`/api/users/${id}`, { method: 'DELETE' })
 }
 
 export const userGenreInterestsApi = {
