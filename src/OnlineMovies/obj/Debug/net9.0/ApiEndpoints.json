@@ -492,6 +492,26 @@
     ]
   },
   {
+    "ContainingType": "OnlineMovies.Controllers.StatusesController",
+    "Method": "GetStatuses",
+    "RelativePath": "api/Statuses",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "OnlineMovies.Responses.ApiResponse\u00601[[System.Collections.Generic.IEnumerable\u00601[[OnlineMovies.DTO.StatusResponseDto, OnlineMovies, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "OnlineMovies.Controllers.TagsController",
     "Method": "GetTags",
     "RelativePath": "api/Tags",
@@ -637,6 +657,26 @@
     "ReturnTypes": [
       {
         "Type": "OnlineMovies.Responses.ApiResponse\u00601[[System.Collections.Generic.IEnumerable\u00601[[OnlineMovies.DTO.UserGenreInterestResponseDto, OnlineMovies, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "OnlineMovies.Controllers.UserMoviesController",
+    "Method": "GetUserMovies",
+    "RelativePath": "api/user/movies",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "OnlineMovies.Responses.ApiResponse\u00601[[System.Collections.Generic.IEnumerable\u00601[[OnlineMovies.DTO.UserMovieResponseDto, OnlineMovies, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "MediaTypes": [
           "text/plain",
           "application/json",

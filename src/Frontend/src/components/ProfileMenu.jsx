@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { API_BASE_URL } from '../api/client'
+
+const resolveAvatarUrl = (avatarUrl) => {
+  if (!avatarUrl) return null
+  return avatarUrl.startsWith('http') ? avatarUrl : `${API_BASE_URL}${avatarUrl}`
+}
 
 const ProfileMenu = ({ user, onLogout }) => {
   const [open, setOpen] = useState(false)
@@ -8,9 +14,11 @@ const ProfileMenu = ({ user, onLogout }) => {
   const location = useLocation()
 
   const avatarLetter = useMemo(() => {
-    if (!user?.name) return 'G'
-    return user.name.charAt(0).toUpperCase()
+    if (!user?.username) return 'G'
+    return user.username.charAt(0).toUpperCase()
   }, [user])
+
+  const avatarSrc = useMemo(() => resolveAvatarUrl(user?.avatarUrl), [user?.avatarUrl])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -55,9 +63,15 @@ const ProfileMenu = ({ user, onLogout }) => {
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <span className="profile-avatar" aria-hidden>{avatarLetter}</span>
+        {avatarSrc ? (
+          <img className="profile-avatar" src={avatarSrc} alt={user?.username} />
+        ) : (
+          <span className="profile-avatar" aria-hidden>
+            {avatarLetter}
+          </span>
+        )}
         <span className="profile-labels">
-          <strong>{user?.name || 'Гость'}</strong>
+          <strong>{user?.username || 'Гость'}</strong>
           <small>{user?.email || 'Не авторизован'}</small>
         </span>
         <svg className="profile-caret" viewBox="0 0 20 20" fill="none" aria-hidden>

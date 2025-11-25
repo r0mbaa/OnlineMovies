@@ -1,30 +1,63 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import movies from '../data/movies.json'
+import { moviesApi } from '../api'
 
-const listLabels = {
-  watched: 'Просмотрено',
-  watchLater: 'Буду смотреть',
-  rated: 'Оценено'
-}
-
-const MovieDetails = ({ user, userLists, onAddToList, onRemoveFromList }) => {
+const MovieDetails = ({ user, statuses, userMovies, onAddToList, onRemoveFromList, onRateMovie }) => {
   const { id } = useParams()
-  const navigate = useNavigate()
   const movieId = Number(id)
+  const navigate = useNavigate()
 
-  const movie = useMemo(() => movies.find((item) => item.id === movieId), [movieId, movies])
+  const [movie, setMovie] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [selectedStatusId, setSelectedStatusId] = useState('')
+  const [rating, setRating] = useState('')
+  const [comment, setComment] = useState('')
+
+  const entry = useMemo(() => userMovies.find((item) => item.movieId === movieId), [userMovies, movieId])
 
   useEffect(() => {
-    console.log('[Movies] Requesting movie data', { endpoint: `/api/movies/${id}`, id: movieId })
-  }, [id, movieId])
+    setSelectedStatusId(entry?.statusId?.toString() || '')
+    setRating(entry?.score?.toString() || '')
+    setComment(entry?.comment || '')
+  }, [entry])
 
-  if (!movie) {
+  useEffect(() => {
+    let isMounted = true
+
+    const loadMovie = async () => {
+      try {
+        setLoading(true)
+        setError('')
+        const data = await moviesApi.getMovie(movieId)
+        if (isMounted) setMovie(data)
+      } catch (err) {
+        if (isMounted) setError(err.message || 'Фильм не найден')
+      } finally {
+        if (isMounted) setLoading(false)
+      }
+    }
+
+    loadMovie()
+    return () => {
+      isMounted = false
+    }
+  }, [movieId])
+
+  if (loading) {
+    return (
+      <section className="movie-detail">
+        <p>Загружаем данные фильма...</p>
+      </section>
+    )
+  }
+
+  if (error || !movie) {
     return (
       <section className="movie-detail missing">
         <div className="detail-card">
           <h2>Фильм не найден</h2>
-          <p>Мы не смогли найти фильм с идентификатором {id}. Попробуйте выбрать другой фильм из каталога.</p>
+          <p>{error || `Мы не нашли фильм с идентификатором ${id}.`}</p>
           <div className="detail-actions">
             <button type="button" className="ghost-action" onClick={() => navigate(-1)}>
               Вернуться назад
@@ -38,24 +71,30 @@ const MovieDetails = ({ user, userLists, onAddToList, onRemoveFromList }) => {
     )
   }
 
-  const toggleList = (listKey) => {
+  const handleSaveStatus = async () => {
     if (!user) {
-      console.log('[Lists] Anonymous user attempted to modify list, redirecting to login')
       navigate('/login')
       return
     }
+    if (!selectedStatusId) return
 
-    const isInList = userLists[listKey]?.includes(movieId)
-    console.log('[Lists] Toggling movie list membership', {
-      list: listKey,
+    await onAddToList?.({
       movieId,
-      action: isInList ? 'remove' : 'add'
+      statusId: Number(selectedStatusId)
     })
-    if (isInList) {
-      onRemoveFromList(listKey, movieId)
-    } else {
-      onAddToList(listKey, movieId)
-    }
+  }
+
+  const handleRemove = async () => {
+    await onRemoveFromList?.(movieId)
+  }
+
+  const handleRate = async () => {
+    if (!rating) return
+    await onRateMovie?.({
+      movieId,
+      score: Number(rating),
+      comment: comment.trim() || undefined
+    })
   }
 
   return (
@@ -65,25 +104,32 @@ const MovieDetails = ({ user, userLists, onAddToList, onRemoveFromList }) => {
       </button>
       <div className="detail-card">
         <div className="detail-media">
-          <img src={movie.poster} alt={movie.title} />
+          {movie.posterUrl ? <img src={movie.posterUrl} alt={movie.title} /> : <span>Нет постера</span>}
         </div>
         <div className="detail-content">
           <p className="detail-genre">
-            {movie.genre} · {movie.year} · {movie.duration} мин
+            {(movie.genres || []).map((genre) => genre.name).join(', ') || 'Жанр не указан'} · {movie.releaseYear || '—'} ·{' '}
+            {movie.durationMinutes ? `${movie.durationMinutes} мин` : '—'}
           </p>
           <h1>{movie.title}</h1>
-          <p className="detail-description">{movie.description}</p>
+          <p className="detail-description">{movie.description || 'Описание отсутствует.'}</p>
           <div className="detail-meta">
             <div>
-              <span className="detail-label">Рейтинг</span>
-              <strong>{movie.rating.toFixed(1)}</strong>
+              <span className="detail-label">Страны</span>
+              <div className="detail-tags">
+                {(movie.countries || []).map((country) => (
+                  <span key={country.id} className="movie-tag">
+                    {country.name}
+                  </span>
+                ))}
+              </div>
             </div>
             <div>
               <span className="detail-label">Теги</span>
               <div className="detail-tags">
-                {movie.tags.map((tag) => (
-                  <span key={tag} className="movie-tag">
-                    {tag}
+                {(movie.tags || []).map((tag) => (
+                  <span key={tag.id} className="movie-tag">
+                    {tag.name}
                   </span>
                 ))}
               </div>
@@ -91,11 +137,7 @@ const MovieDetails = ({ user, userLists, onAddToList, onRemoveFromList }) => {
           </div>
 
           <div className="detail-actions">
-            <button
-              type="button"
-              className="primary-action"
-              onClick={() => console.log('[Movies] Play trailer request sent to /api/movies/trailer', { movieId })}
-            >
+            <button type="button" className="primary-action" onClick={() => window.open(movie.trailers?.[0]?.url || '#', '_blank')}>
               Смотреть трейлер
             </button>
             <button type="button" className="ghost-action" onClick={() => navigate('/')}>
@@ -104,23 +146,45 @@ const MovieDetails = ({ user, userLists, onAddToList, onRemoveFromList }) => {
           </div>
 
           <div className="detail-lists">
-            <h2>Добавить в коллекцию</h2>
-            <div className="detail-list-buttons">
-              {Object.entries(listLabels).map(([key, label]) => {
-                const active = userLists[key]?.includes(movieId)
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    className={`list-toggle${active ? ' active' : ''}`}
-                    onClick={() => toggleList(key)}
-                  >
-                    {label}
+            <h2>Управление фильмом</h2>
+            {user ? (
+              <>
+                <div className="detail-list-controls">
+                  <select value={selectedStatusId} onChange={(event) => setSelectedStatusId(event.target.value)}>
+                    <option value="">Выберите статус</option>
+                    {statuses.map((status) => (
+                      <option key={status.statusId} value={status.statusId}>
+                        {status.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button type="button" className="primary-action" onClick={handleSaveStatus} disabled={!selectedStatusId}>
+                    Сохранить статус
                   </button>
-                )
-              })}
-            </div>
-            {!user && <p className="detail-hint">Войдите в аккаунт, чтобы сохранять фильмы в списки.</p>}
+                  {entry && (
+                    <button type="button" className="ghost-action" onClick={handleRemove}>
+                      Удалить из списка
+                    </button>
+                  )}
+                </div>
+                <div className="detail-rate">
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    placeholder="Оценка"
+                    value={rating}
+                    onChange={(event) => setRating(event.target.value)}
+                  />
+                  <input placeholder="Комментарий" value={comment} onChange={(event) => setComment(event.target.value)} />
+                  <button type="button" onClick={handleRate} disabled={!rating}>
+                    Оценить
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p className="detail-hint">Войдите в аккаунт, чтобы сохранять фильм в личных списках.</p>
+            )}
           </div>
         </div>
       </div>

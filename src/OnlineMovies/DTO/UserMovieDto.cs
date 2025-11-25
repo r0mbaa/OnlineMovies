@@ -42,6 +42,8 @@ public class UserMovieResponseDto
     public int? Score { get; set; }
 
     public string? Comment { get; set; }
+
+    public MovieResponseDto? Movie { get; set; }
 }
 
 

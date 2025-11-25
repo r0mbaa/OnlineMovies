@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineMovies.Database;
 using OnlineMovies.DTO;
+using OnlineMovies.Mappers;
 using OnlineMovies.Models;
 using OnlineMovies.Responses;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -26,6 +28,31 @@ public class UserMoviesController : ControllerBase
         _context = context;
     }
 
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<IEnumerable<UserMovieResponseDto>>>> GetUserMovies()
+    {
+        if (!TryGetUserId<IEnumerable<UserMovieResponseDto>>(out var userId, out var errorResult))
+        {
+            return errorResult!;
+        }
+
+        var entries = await BuildUserMoviesQuery()
+            .Where(um => um.UserId == userId)
+            .OrderByDescending(um => um.AddedAt)
+            .ToListAsync();
+
+        var response = entries
+            .Select(MapToResponse)
+            .ToList();
+
+        return Ok(new ApiResponse<IEnumerable<UserMovieResponseDto>>
+        {
+            Status = "Успешно",
+            Message = "Список фильмов пользователя получен",
+            Data = response
+        });
+    }
+
     [HttpPost]
     public async Task<ActionResult<ApiResponse<UserMovieResponseDto>>> AddOrUpdateUserMovie(UserMovieRequestDto request)
     {
@@ -39,7 +66,7 @@ public class UserMoviesController : ControllerBase
             });
         }
 
-        if (!TryGetUserId(out var userId, out var errorResult))
+        if (!TryGetUserId<UserMovieResponseDto>(out var userId, out var errorResult))
         {
             return errorResult!;
         }
@@ -109,7 +136,7 @@ public class UserMoviesController : ControllerBase
             });
         }
 
-        if (!TryGetUserId(out var userId, out var errorResult))
+        if (!TryGetUserId<UserMovieResponseDto>(out var userId, out var errorResult))
         {
             return errorResult!;
         }
@@ -180,7 +207,7 @@ public class UserMoviesController : ControllerBase
             });
         }
 
-        if (!TryGetUserId(out var userId, out var errorResult))
+        if (!TryGetUserId<UserMovieResponseDto>(out var userId, out var errorResult))
         {
             return errorResult!;
         }
@@ -211,13 +238,28 @@ public class UserMoviesController : ControllerBase
 
     private async Task<UserMovie?> LoadUserMovieAsync(int userId, int movieId)
     {
-        return await _context.UserMovies
-            .Include(um => um.Movie)
-            .Include(um => um.Status)
+        return await BuildUserMoviesQuery()
             .FirstOrDefaultAsync(um => um.UserId == userId && um.MovieId == movieId);
     }
 
-    private bool TryGetUserId(out int userId, out ActionResult<ApiResponse<UserMovieResponseDto>>? errorResult)
+    private IQueryable<UserMovie> BuildUserMoviesQuery()
+    {
+        return _context.UserMovies
+            .Include(um => um.Movie)
+                .ThenInclude(m => m.MovieGenres)
+                    .ThenInclude(mg => mg.Genre)
+            .Include(um => um.Movie)
+                .ThenInclude(m => m.MovieTags)
+                    .ThenInclude(mt => mt.Tag)
+            .Include(um => um.Movie)
+                .ThenInclude(m => m.MovieCountries)
+                    .ThenInclude(mc => mc.Country)
+            .Include(um => um.Movie)
+                .ThenInclude(m => m.Trailers)
+            .Include(um => um.Status);
+    }
+
+    private bool TryGetUserId<T>(out int userId, out ActionResult<ApiResponse<T>>? errorResult)
     {
         userId = 0;
         errorResult = null;
@@ -225,11 +267,11 @@ public class UserMoviesController : ControllerBase
         var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrWhiteSpace(userIdValue) || !int.TryParse(userIdValue, out userId))
         {
-            errorResult = Unauthorized(new ApiResponse<UserMovieResponseDto>
+            errorResult = Unauthorized(new ApiResponse<T>
             {
                 Status = "Ошибка",
                 Message = "Не удалось определить пользователя.",
-                Data = null
+                Data = default
             });
 
             return false;
@@ -255,7 +297,8 @@ public class UserMoviesController : ControllerBase
             StatusId = entity.StatusId,
             StatusName = entity.Status?.Name,
             Score = entity.Score,
-            Comment = entity.Comment
+            Comment = entity.Comment,
+            Movie = entity.Movie != null ? MovieMapper.Map(entity.Movie) : null
         };
     }
 }

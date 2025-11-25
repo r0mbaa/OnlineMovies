@@ -55,13 +55,7 @@ public class AuthController : ControllerBase
 
         string token = CreateToken(user);
 
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Expires = DateTime.Now.AddDays(1),
-            Secure = true,
-            SameSite = SameSiteMode.Strict
-        };
+        var cookieOptions = BuildAuthCookieOptions();
 
         Response.Cookies.Append("jwt-token-online-movies", token, cookieOptions);
 
@@ -86,13 +80,7 @@ public class AuthController : ControllerBase
 
         string token = CreateToken(user);
 
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Expires = DateTime.Now.AddDays(1),
-            Secure = true,
-            SameSite = SameSiteMode.Strict
-        };
+        var cookieOptions = BuildAuthCookieOptions();
 
         Response.Cookies.Append("jwt-token-online-movies", token, cookieOptions);
 
@@ -155,13 +143,30 @@ public class AuthController : ControllerBase
     [Authorize]
     public IActionResult Logout()
     {
-        Response.Cookies.Delete("jwt-token-online-movies");
+        Response.Cookies.Delete("jwt-token-online-movies", new CookieOptions
+        {
+            Path = "/",
+            Secure = true,
+            SameSite = SameSiteMode.None
+        });
 
         return Ok(new ApiResponse
         {
             Status = "Успешно",
             Message = "Вы успешно вышли из системы"
         });
+    }
+
+    private static CookieOptions BuildAuthCookieOptions()
+    {
+        return new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = DateTime.Now.AddDays(1),
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Path = "/"
+        };
     }
 
     private string CreateToken(User user)

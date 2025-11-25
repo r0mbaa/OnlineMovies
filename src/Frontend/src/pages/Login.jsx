@@ -3,32 +3,32 @@ import { Link, useNavigate } from 'react-router-dom'
 
 const Login = ({ onLogin }) => {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ email: '', password: '' })
+  const [form, setForm] = useState({ username: '', password: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [feedback, setFeedback] = useState('')
+  const [status, setStatus] = useState('')
+  const [error, setError] = useState('')
 
   const handleChange = (event) => {
     const { name, value } = event.target
     setForm((prev) => ({ ...prev, [name]: value }))
+    if (error) setError('')
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     setIsSubmitting(true)
-    setFeedback('Проверяем данные...')
-    console.log('[Auth] Sending login request', { endpoint: '/api/login', payload: form })
-
-    setTimeout(() => {
-      setIsSubmitting(false)
-      const authProfile = {
-        name: form.email.split('@')[0] || 'Пользователь',
-        email: form.email
-      }
-      console.log('[Auth] Login response received', { endpoint: '/api/login', profile: authProfile })
-      onLogin?.(authProfile)
-      setFeedback('Добро пожаловать обратно!')
+    setStatus('Проверяем данные...')
+    setError('')
+    try {
+      await onLogin?.(form)
+      setStatus('Добро пожаловать!')
       navigate('/')
-    }, 900)
+    } catch (err) {
+      setError(err.message || 'Не удалось войти. Попробуйте снова.')
+      setStatus('')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -40,13 +40,12 @@ const Login = ({ onLogin }) => {
         </div>
         <form className="auth-form" onSubmit={handleSubmit}>
           <label>
-            Электронная почта
+            Имя пользователя
             <input
               required
-              type="email"
-              name="email"
-              placeholder="example@mail.com"
-              value={form.email}
+              name="username"
+              placeholder="Ваш никнейм"
+              value={form.username}
               onChange={handleChange}
             />
           </label>
@@ -65,7 +64,8 @@ const Login = ({ onLogin }) => {
           <button type="submit" className="primary-action" disabled={isSubmitting}>
             {isSubmitting ? 'Вход...' : 'Войти'}
           </button>
-          {feedback && <span className="auth-feedback">{feedback}</span>}
+          {status && <span className="auth-feedback">{status}</span>}
+          {error && <span className="auth-error">{error}</span>}
         </form>
         <div className="auth-footer">
           <span>Нет аккаунта?</span>

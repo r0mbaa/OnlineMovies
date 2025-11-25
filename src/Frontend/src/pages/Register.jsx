@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 
 const Register = ({ onRegister }) => {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' })
+  const [form, setForm] = useState({ username: '', email: '', password: '', confirm: '' })
   const [error, setError] = useState('')
+  const [status, setStatus] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleChange = (event) => {
@@ -13,28 +14,31 @@ const Register = ({ onRegister }) => {
     if (error) setError('')
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     if (form.password !== form.confirm) {
       setError('Пароли не совпадают')
       return
     }
-    setIsSubmitting(true)
-    console.log('[Auth] Sending registration request', {
-      endpoint: '/api/register',
-      payload: { name: form.name, email: form.email }
-    })
 
-    setTimeout(() => {
-      setIsSubmitting(false)
-      const newProfile = {
-        name: form.name.trim() || 'Киноман',
-        email: form.email
-      }
-      console.log('[Auth] Registration response received', { endpoint: '/api/register', profile: newProfile })
-      onRegister?.(newProfile)
+    setIsSubmitting(true)
+    setStatus('Создаём профиль...')
+    setError('')
+
+    try {
+      await onRegister?.({
+        username: form.username.trim(),
+        email: form.email.trim(),
+        password: form.password
+      })
+      setStatus('Профиль создан!')
       navigate('/')
-    }, 1000)
+    } catch (err) {
+      setError(err.message || 'Не удалось завершить регистрацию')
+      setStatus('')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -46,12 +50,12 @@ const Register = ({ onRegister }) => {
         </div>
         <form className="auth-form" onSubmit={handleSubmit}>
           <label>
-            Имя
+            Имя пользователя
             <input
               required
-              name="name"
-              placeholder="Как к вам обращаться?"
-              value={form.name}
+              name="username"
+              placeholder="Никнейм"
+              value={form.username}
               onChange={handleChange}
             />
           </label>
@@ -90,6 +94,7 @@ const Register = ({ onRegister }) => {
               minLength={6}
             />
           </label>
+          {status && <span className="auth-feedback">{status}</span>}
           {error && <span className="auth-error">{error}</span>}
           <button type="submit" className="primary-action" disabled={isSubmitting}>
             {isSubmitting ? 'Создаем профиль...' : 'Зарегистрироваться'}
