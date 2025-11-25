@@ -1,58 +1,31 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { API_BASE_URL } from '../api/client'
-import { moviesApi } from '../api'
 
 const resolveAvatarUrl = (avatarUrl) => {
   if (!avatarUrl) return null
   return avatarUrl.startsWith('http') ? avatarUrl : `${API_BASE_URL}${avatarUrl}`
 }
 
-const Profile = ({
-  user,
-  statuses,
-  userMovies,
-  onUpdateDescription,
-  onUploadAvatar,
-  onAddToList,
-  onRemoveFromList,
-  onRateMovie
-}) => {
+const Profile = ({ user, statuses, userMovies, onUpdateDescription, onUploadAvatar, onRemoveFromList, onRateMovie }) => {
   const navigate = useNavigate()
   const [description, setDescription] = useState(user?.profileDescription || '')
   const [isSavingDescription, setIsSavingDescription] = useState(false)
   const [descFeedback, setDescFeedback] = useState('')
-  const [catalog, setCatalog] = useState([])
-  const [catalogError, setCatalogError] = useState('')
-  const [selectedStatusId, setSelectedStatusId] = useState('')
-  const [selectedMovieId, setSelectedMovieId] = useState('')
-  const [listFeedback, setListFeedback] = useState('')
+  const [activeStatusId, setActiveStatusId] = useState(statuses[0]?.statusId?.toString() || '')
   const [avatarUploading, setAvatarUploading] = useState(false)
-  const [ratingValue, setRatingValue] = useState('')
-  const [ratingComment, setRatingComment] = useState('')
+  const [ratingDrafts, setRatingDrafts] = useState({})
+  const [listFeedback, setListFeedback] = useState('')
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
-    setDescription(user?.profileDescription || '')
-  }, [user?.profileDescription])
-
-  useEffect(() => {
-    let isMounted = true
-    moviesApi
-      .getMovies()
-      .then((data) => {
-        if (isMounted) setCatalog(data || [])
-      })
-      .catch((err) => {
-        if (isMounted) setCatalogError(err.message || 'Не удалось загрузить каталог фильмов')
-      })
-    return () => {
-      isMounted = false
-    }
-  }, [])
-
-  useEffect(() => {
-    setListFeedback('')
-  }, [selectedStatusId])
+    setActiveStatusId((prev) => {
+      if (statuses.some((status) => String(status.statusId) === prev)) {
+        return prev
+      }
+      return statuses[0]?.statusId?.toString() || ''
+    })
+  }, [statuses])
 
   if (!user) {
     return (
@@ -79,6 +52,9 @@ const Profile = ({
       return acc
     }, {})
   }, [statuses, userMovies])
+
+  const activeStatusEntries = groupedByStatus[Number(activeStatusId)] || []
+  const activeStatusName = statuses.find((s) => String(s.statusId) === activeStatusId)?.name || 'Список'
 
   const handleDescriptionSubmit = async (event) => {
     event.preventDefault()
@@ -107,38 +83,25 @@ const Profile = ({
     }
   }
 
-  const handleAddMovie = async () => {
-    if (!selectedMovieId || !selectedStatusId) return
-    try {
-      await onAddToList?.({
-        movieId: Number(selectedMovieId),
-        statusId: Number(selectedStatusId)
-      })
-      setListFeedback('Фильм добавлен')
-      setSelectedMovieId('')
-    } catch (err) {
-      setListFeedback(err.message || 'Не удалось добавить фильм')
-    }
-  }
-
   const handleRemoveMovie = async (movieId) => {
     try {
       await onRemoveFromList?.(movieId)
+      setListFeedback('Фильм удалён из списка')
     } catch (err) {
       setListFeedback(err.message || 'Не удалось удалить фильм')
     }
   }
 
   const handleRateMovie = async (movieId) => {
-    if (!ratingValue) return
+    const draft = ratingDrafts[movieId] || {}
+    if (!draft.score) return
     try {
       await onRateMovie?.({
         movieId,
-        score: Number(ratingValue),
-        comment: ratingComment.trim() || undefined
+        score: Number(draft.score),
+        comment: draft.comment?.trim() || undefined
       })
-      setRatingValue('')
-      setRatingComment('')
+      setRatingDrafts((prev) => ({ ...prev, [movieId]: { score: '', comment: '' } }))
     } catch (err) {
       setListFeedback(err.message || 'Не удалось сохранить оценку')
     }
@@ -150,135 +113,138 @@ const Profile = ({
     <section className="profile-page">
       <div className="profile-top">
         <div className="profile-info">
-          <div className="profile-avatar-preview">
-            {avatarUrl ? <img src={avatarUrl} alt={user.username} /> : <span>{user.username?.charAt(0).toUpperCase()}</span>}
-            <label className="profile-upload">
-              <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleAvatarChange} disabled={avatarUploading} />
-              {avatarUploading ? 'Загрузка...' : 'Изменить'}
-            </label>
-          </div>
-          <div>
-            <h1>{user.username}</h1>
-            <p>{user.email}</p>
-            <small>Роль: {user.role}</small>
-          </div>
-        </div>
-        <div className="profile-stats">
-          {statuses.map((status) => (
-            <div key={status.statusId}>
-              <span>{status.name}</span>
-              <strong>{groupedByStatus[status.statusId]?.length || 0}</strong>
+          <div className="profile-avatar-section">
+            <div className="profile-avatar-frame">
+              <div className="profile-avatar-preview">
+                {avatarUrl ? <img src={avatarUrl} alt={user.username} /> : <span>{user.username?.charAt(0).toUpperCase()}</span>}
+              </div>
             </div>
-          ))}
+            <div className="profile-avatar-actions">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={handleAvatarChange}
+                disabled={avatarUploading}
+                hidden
+              />
+              <button type="button" className="ghost-action" onClick={() => fileInputRef.current?.click()} disabled={avatarUploading}>
+                {avatarUploading ? 'Загрузка...' : 'Изменить'}
+              </button>
+            </div>
+          </div>
+          <div className="profile-details">
+            <div className="profile-identity">
+              <h1>{user.username}</h1>
+              <p>{user.email}</p>
+              <small>Роль: {user.role}</small>
+            </div>
+            <form className="profile-description-form" onSubmit={handleDescriptionSubmit}>
+              <label htmlFor="profileDescription">Описание профиля</label>
+              <textarea
+                id="profileDescription"
+                name="profileDescription"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+                placeholder="Расскажите о любимых жанрах, режиссёрах и т.д."
+                rows="4"
+              />
+              <div className="profile-description-actions">
+                <button type="submit" className="primary-action" disabled={isSavingDescription}>
+                  {isSavingDescription ? 'Сохраняем...' : 'Сохранить'}
+                </button>
+                {descFeedback && <p className="profile-feedback">{descFeedback}</p>}
+              </div>
+            </form>
+          </div>
         </div>
       </div>
 
-      <div className="profile-content">
-        <form className="profile-form" onSubmit={handleDescriptionSubmit}>
-          <h2>Описание профиля</h2>
-          <textarea
-            name="profileDescription"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            placeholder="Расскажите о любимых жанрах, режиссёрах и т.д."
-            rows="4"
-          />
-          <button type="submit" className="primary-action" disabled={isSavingDescription}>
-            {isSavingDescription ? 'Сохраняем...' : 'Сохранить'}
-          </button>
-          {descFeedback && <p className="profile-feedback">{descFeedback}</p>}
-        </form>
-
-        <div className="profile-lists">
-          <div className="profile-add">
-            <h2>Управление списками</h2>
-            <div className="profile-add-controls">
-              <select value={selectedStatusId} onChange={(event) => setSelectedStatusId(event.target.value)}>
-                <option value="">Выберите статус</option>
-                {statuses.map((status) => (
-                  <option key={status.statusId} value={status.statusId}>
-                    {status.name}
-                  </option>
-                ))}
-              </select>
-              <select value={selectedMovieId} onChange={(event) => setSelectedMovieId(event.target.value)}>
-                <option value="">Выберите фильм</option>
-                {catalog.map((movie) => (
-                  <option key={movie.movieId} value={movie.movieId}>
-                    {movie.title}
-                  </option>
-                ))}
-              </select>
-              <button type="button" className="ghost-action" onClick={handleAddMovie} disabled={!selectedMovieId || !selectedStatusId}>
-                Добавить
-              </button>
-            </div>
-            {catalogError && <p className="error-text">{catalogError}</p>}
-            {listFeedback && <p className="profile-feedback">{listFeedback}</p>}
+      <div className="profile-lists">
+        <div className="profile-status-tabs">
+          {statuses.map((status) => (
+            <button
+              key={status.statusId}
+              type="button"
+              className={`profile-tab${activeStatusId === String(status.statusId) ? ' active' : ''}`}
+              onClick={() => setActiveStatusId(String(status.statusId))}
+            >
+              {status.name}
+              <span>{groupedByStatus[status.statusId]?.length || 0}</span>
+            </button>
+          ))}
+        </div>
+        <div className="profile-status-block">
+          <div className="profile-status-header">
+            <h3>{activeStatusName}</h3>
           </div>
-
-          {statuses.map((status) => {
-            const entries = groupedByStatus[status.statusId] || []
-            return (
-              <div key={status.statusId} className="profile-status-block">
-                <div className="profile-tabs">
-                  <h3>{status.name}</h3>
-                  <span>{entries.length} фильмов</span>
-                </div>
-                <div className="profile-list-grid">
-                  {entries.length === 0 ? (
-                    <p className="profile-list-empty">В этом статусе пока нет фильмов.</p>
-                  ) : (
-                    entries.map((entry) => {
-                      const movie = entry.movie
-                      return (
-                        <div key={entry.movieId} className="profile-list-card">
-                          <div className="list-card-media">
-                            {movie?.posterUrl ? <img src={movie.posterUrl} alt={entry.movieTitle} /> : <span>Нет постера</span>}
-                          </div>
-                          <div className="list-card-content">
-                            <h3>{entry.movieTitle}</h3>
-                            <p>
-                              {movie?.releaseYear || '—'} · {movie?.durationMinutes ? `${movie.durationMinutes} мин` : '—'}
-                            </p>
-                            {entry.score && <p>Оценка: {entry.score}/10</p>}
-                            {entry.comment && <p className="profile-comment">Комментарий: {entry.comment}</p>}
-                            <div className="list-card-actions">
-                              <button type="button" className="profile-link" onClick={() => navigate(`/movies/${entry.movieId}`)}>
-                                Открыть
-                              </button>
-                              <button type="button" className="profile-remove" onClick={() => handleRemoveMovie(entry.movieId)}>
-                                Удалить
-                              </button>
-                            </div>
-                            <div className="profile-rate">
-                              <input
-                                type="number"
-                                min="1"
-                                max="10"
-                                placeholder="Оценка"
-                                value={ratingValue}
-                                onChange={(event) => setRatingValue(event.target.value)}
-                              />
-                              <input
-                                type="text"
-                                placeholder="Комментарий"
-                                value={ratingComment}
-                                onChange={(event) => setRatingComment(event.target.value)}
-                              />
-                              <button type="button" onClick={() => handleRateMovie(entry.movieId)} disabled={!ratingValue}>
-                                Оценить
-                              </button>
-                            </div>
-                          </div>
+          {listFeedback && <p className="profile-feedback">{listFeedback}</p>}
+          <div className="profile-list-grid">
+            {activeStatusEntries.length === 0 ? (
+              <p className="profile-list-empty">В этом статусе пока нет фильмов.</p>
+            ) : (
+              activeStatusEntries.map((entry) => {
+                const movie = entry.movie
+                return (
+                  <div key={entry.movieId} className="profile-list-card">
+                    <div className="list-card-media">
+                      {movie?.posterUrl ? <img src={movie.posterUrl} alt={entry.movieTitle} /> : <span>Нет постера</span>}
+                    </div>
+                    <div className="list-card-content">
+                      <div className="list-card-header">
+                        <div>
+                          <h3>{entry.movieTitle}</h3>
+                          <p>
+                            {movie?.releaseYear || '—'} · {movie?.durationMinutes ? `${movie.durationMinutes} мин` : '—'}
+                          </p>
                         </div>
-                      )
-                    })
-                  )}
-                </div>
-              </div>
-            )
-          })}
+                        <div className="list-card-score">
+                          <input
+                            type="number"
+                            min="1"
+                            max="10"
+                            placeholder="Оценка"
+                            value={ratingDrafts[entry.movieId]?.score || ''}
+                            onChange={(event) =>
+                              setRatingDrafts((prev) => ({
+                                ...prev,
+                                [entry.movieId]: { ...(prev[entry.movieId] || {}), score: event.target.value }
+                              }))
+                            }
+                          />
+                          <button type="button" onClick={() => handleRateMovie(entry.movieId)} disabled={!ratingDrafts[entry.movieId]?.score}>
+                            OK
+                          </button>
+                        </div>
+                      </div>
+                      <p className="list-card-comment">
+                        Комментарий:
+                        <input
+                          type="text"
+                          placeholder="Добавьте заметку"
+                          value={ratingDrafts[entry.movieId]?.comment || ''}
+                          onChange={(event) =>
+                            setRatingDrafts((prev) => ({
+                              ...prev,
+                              [entry.movieId]: { ...(prev[entry.movieId] || {}), comment: event.target.value }
+                            }))
+                          }
+                        />
+                      </p>
+                      <div className="list-card-actions">
+                        <button type="button" className="profile-link" onClick={() => navigate(`/movies/${entry.movieId}`)}>
+                          Открыть
+                        </button>
+                        <button type="button" className="profile-remove" onClick={() => handleRemoveMovie(entry.movieId)}>
+                          Удалить
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })
+            )}
+          </div>
         </div>
       </div>
     </section>

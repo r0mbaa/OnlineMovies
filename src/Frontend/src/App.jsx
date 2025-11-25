@@ -6,6 +6,8 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import MovieDetails from './pages/MovieDetails'
 import Profile from './pages/Profile'
+import RandomMovie from './pages/RandomMovie'
+import RecommendedMovie from './pages/RecommendedMovie'
 import { authApi, directoriesApi, profileApi, userMoviesApi } from './api'
 import './App.css'
 
@@ -142,6 +144,8 @@ function App() {
               <Route index element={<Home user={user} />} />
               <Route path="login" element={<Login onLogin={handleLogin} />} />
               <Route path="register" element={<Register onRegister={handleRegister} />} />
+              <Route path="random" element={<RandomMovie />} />
+              <Route path="recommendations" element={<RecommendedMovie user={user} />} />
               <Route
                 path="movies/:id"
                 element={
@@ -164,7 +168,6 @@ function App() {
                     userMovies={userMovies}
                     onUpdateDescription={handleUpdateDescription}
                     onUploadAvatar={handleAvatarUpload}
-                    onAddToList={handleAddToList}
                     onRemoveFromList={handleRemoveFromList}
                     onRateMovie={handleRateMovie}
                   />

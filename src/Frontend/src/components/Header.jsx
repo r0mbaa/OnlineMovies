@@ -20,7 +20,7 @@ const Header = ({ user, onLogout, theme, onToggleTheme }) => {
       </Link>
 
       <nav className="app-nav">
-        {navItems.map((item) => (
+        {navItems.map((item) =>
           item.to.startsWith('#') ? (
             <a key={item.to} className="nav-link" href={item.to}>
               {item.label}
@@ -34,10 +34,18 @@ const Header = ({ user, onLogout, theme, onToggleTheme }) => {
               {item.label}
             </Link>
           )
-        ))}
+        )}
       </nav>
 
       <div className="header-actions">
+        <div className="header-shortcuts">
+          <Link className="ghost-action" to="/random">
+            Случайный фильм
+          </Link>
+          <Link className="ghost-action" to="/recommendations">
+            Рекомендации
+          </Link>
+        </div>
         <button
           type="button"
           className={`theme-toggle${isDark ? ' dark' : ' light'}`}
