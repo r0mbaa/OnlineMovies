@@ -6,8 +6,10 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import MovieDetails from './pages/MovieDetails'
 import Profile from './pages/Profile'
+import PublicProfile from './pages/PublicProfile'
 import RandomMovie from './pages/RandomMovie'
 import RecommendedMovie from './pages/RecommendedMovie'
+import Users from './pages/Users'
 import { authApi, directoriesApi, profileApi, userMoviesApi } from './api'
 import './App.css'
 
@@ -141,9 +143,10 @@ function App() {
             <Route
             element={<AppLayout user={user} onLogout={handleLogout} theme={theme} onToggleTheme={toggleTheme} />}
             >
-              <Route index element={<Home user={user} />} />
+              <Route index element={<Home />} />
               <Route path="login" element={<Login onLogin={handleLogin} />} />
               <Route path="register" element={<Register onRegister={handleRegister} />} />
+              <Route path="users" element={<Users />} />
               <Route path="random" element={<RandomMovie />} />
               <Route path="recommendations" element={<RecommendedMovie user={user} />} />
               <Route
@@ -173,7 +176,8 @@ function App() {
                   />
                 }
               />
-              <Route path="*" element={<Home user={user} />} />
+              <Route path="profiles/:username" element={<PublicProfile statuses={statuses} />} />
+              <Route path="*" element={<Home />} />
             </Route>
           </Routes>
         )}

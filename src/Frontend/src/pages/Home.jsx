@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import MovieCard from '../components/MovieCard'
-import { directoriesApi, moviesApi, recommendationsApi } from '../api'
+import { directoriesApi, moviesApi } from '../api'
 
 const createDefaultFilters = () => ({
   title: '',
@@ -26,16 +26,17 @@ const directionOptions = [
   { value: 'desc', label: 'По убыванию' }
 ]
 
-const Home = ({ user }) => {
+const Home = () => {
   const [filters, setFilters] = useState(() => createDefaultFilters())
   const [movies, setMovies] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 20
   const [searchLoading, setSearchLoading] = useState(false)
   const [searchError, setSearchError] = useState('')
   const [referenceLoading, setReferenceLoading] = useState(true)
   const [referenceError, setReferenceError] = useState('')
   const [referenceData, setReferenceData] = useState({ genres: [], tags: [], countries: [] })
-  const [recommendations, setRecommendations] = useState([])
-  const [recommendationsError, setRecommendationsError] = useState('')
+  const [advancedOpen, setAdvancedOpen] = useState(false)
 
   const loadReferenceData = useCallback(() => {
     let isMounted = true
@@ -139,13 +140,16 @@ const Home = ({ user }) => {
   }, [])
 
   const runSearch = useCallback(
-    async (state) => {
+    async (state, resetPage = false) => {
       try {
         setSearchLoading(true)
         setSearchError('')
         const payload = buildSearchPayload(state)
         const list = await moviesApi.getMovies(payload)
         setMovies(list || [])
+        if (resetPage) {
+          setCurrentPage(1)
+        }
       } catch (err) {
         setMovies([])
         setSearchError(err.message || 'Не удалось выполнить поиск')
@@ -157,7 +161,7 @@ const Home = ({ user }) => {
   )
 
   useEffect(() => {
-    runSearch(createDefaultFilters())
+    runSearch(createDefaultFilters(), true)
   }, [runSearch])
   const handleInputChange = (event) => {
     const { name, value } = event.target
@@ -181,44 +185,14 @@ const Home = ({ user }) => {
 
   const handleSearch = (event) => {
     event?.preventDefault()
-    runSearch(filters)
+    runSearch(filters, true)
   }
 
   const handleReset = () => {
     const reset = createDefaultFilters()
     setFilters(reset)
-    runSearch(reset)
+    runSearch(reset, true)
   }
-
-  useEffect(() => {
-    if (!user) {
-      setRecommendations([])
-      setRecommendationsError('')
-      return
-    }
-
-    let isMounted = true
-
-    const loadRecommendations = async () => {
-      try {
-        setRecommendationsError('')
-        const data = await recommendationsApi.getMovieRecommendations()
-        if (isMounted) {
-          setRecommendations(data || [])
-        }
-      } catch (err) {
-        if (isMounted) {
-          setRecommendations([])
-          setRecommendationsError(err.message || 'Не удалось получить рекомендации')
-        }
-      }
-    }
-
-    loadRecommendations()
-    return () => {
-      isMounted = false
-    }
-  }, [user])
 
   const ChipGroup = ({ label, options, field, idKey }) => (
     <div className="filter-group">
@@ -265,25 +239,11 @@ const Home = ({ user }) => {
             <p>Комбинируйте фильтры по названию, странам, жанрам, тегам и длительности, а сортировка поможет выстроить выдачу.</p>
           </div>
           {referenceError && <p className="error-text">{referenceError}</p>}
-          <form className="search-form" onSubmit={handleSearch}>
-            <div className="search-grid">
+          <form className={`search-form${advancedOpen ? ' expanded' : ''}`} onSubmit={handleSearch}>
+            <div className="search-grid basic-grid">
               <label className="filter-group">
                 <span>Название</span>
                 <input type="text" name="title" placeholder="Например, Интерстеллар" value={filters.title} onChange={handleInputChange} />
-              </label>
-              <label className="filter-group">
-                <span>Год релиза</span>
-                <div className="range-inputs">
-                  <input type="number" name="releaseYearFrom" placeholder="От" value={filters.releaseYearFrom} onChange={handleInputChange} />
-                  <input type="number" name="releaseYearTo" placeholder="До" value={filters.releaseYearTo} onChange={handleInputChange} />
-                </div>
-              </label>
-              <label className="filter-group">
-                <span>Длительность (мин.)</span>
-                <div className="range-inputs">
-                  <input type="number" name="durationFrom" placeholder="От" value={filters.durationFrom} onChange={handleInputChange} />
-                  <input type="number" name="durationTo" placeholder="До" value={filters.durationTo} onChange={handleInputChange} />
-                </div>
               </label>
               <label className="filter-group">
                 <span>Сортировка</span>
@@ -306,15 +266,38 @@ const Home = ({ user }) => {
                 </select>
               </label>
             </div>
-            <ChipGroup label="Жанры" options={referenceData.genres} field="genreIds" idKey="genreId" />
-            <ChipGroup label="Теги" options={referenceData.tags} field="tagIds" idKey="tagId" />
-            <ChipGroup label="Страны" options={referenceData.countries} field="countryIds" idKey="countryId" />
+            {advancedOpen && (
+              <>
+                <div className="search-grid advanced-grid">
+                  <label className="filter-group">
+                    <span>Год релиза</span>
+                    <div className="range-inputs">
+                      <input type="number" name="releaseYearFrom" placeholder="От" value={filters.releaseYearFrom} onChange={handleInputChange} />
+                      <input type="number" name="releaseYearTo" placeholder="До" value={filters.releaseYearTo} onChange={handleInputChange} />
+                    </div>
+                  </label>
+                  <label className="filter-group">
+                    <span>Длительность (мин.)</span>
+                    <div className="range-inputs">
+                      <input type="number" name="durationFrom" placeholder="От" value={filters.durationFrom} onChange={handleInputChange} />
+                      <input type="number" name="durationTo" placeholder="До" value={filters.durationTo} onChange={handleInputChange} />
+                    </div>
+                  </label>
+                </div>
+                <ChipGroup label="Жанры" options={referenceData.genres} field="genreIds" idKey="genreId" />
+                <ChipGroup label="Теги" options={referenceData.tags} field="tagIds" idKey="tagId" />
+                <ChipGroup label="Страны" options={referenceData.countries} field="countryIds" idKey="countryId" />
+              </>
+            )}
             <div className="filter-actions">
               <button type="submit" className="primary-action" disabled={searchLoading}>
                 {searchLoading ? 'Ищем...' : 'Применить фильтры'}
               </button>
               <button type="button" className="ghost-action" onClick={handleReset} disabled={searchLoading}>
                 Сбросить
+              </button>
+              <button type="button" className="filter-toggle" onClick={() => setAdvancedOpen((prev) => !prev)}>
+                {advancedOpen ? 'Скрыть подробный поиск' : 'Подробный поиск'}
               </button>
               {searchError && <p className="error-text">{searchError}</p>}
             </div>
@@ -325,7 +308,11 @@ const Home = ({ user }) => {
       <section className="movies-section">
         <div className="section-header">
           <h2>Результаты поиска</h2>
-          {movies.length > 0 && !searchLoading && <p>Найдено фильмов: {movies.length}</p>}
+        {movies.length > 0 && !searchLoading && (
+          <p>
+            Найдено фильмов: {movies.length} · Страница {currentPage} из {Math.max(1, Math.ceil(movies.length / pageSize))}
+          </p>
+        )}
         </div>
         {searchLoading ? (
           <p>Загрузка фильмов...</p>
@@ -334,37 +321,34 @@ const Home = ({ user }) => {
         ) : movies.length === 0 ? (
           <p>По заданным условиям ничего не нашлось. Попробуйте смягчить фильтры.</p>
         ) : (
-          <div className="movie-row">
-            <div className="movie-row-content">
-              {movies.map((movie) => (
+          <>
+            <div className="movie-grid-list">
+              {movies.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((movie) => (
                 <MovieCard key={movie.movieId} movie={movie} />
               ))}
             </div>
-          </div>
+            {movies.length > pageSize && (
+              <div className="pagination">
+                <button type="button" className="ghost-action" disabled={currentPage === 1} onClick={() => setCurrentPage((prev) => prev - 1)}>
+                  Назад
+                </button>
+                <span>
+                  Страница {currentPage} из {Math.ceil(movies.length / pageSize)}
+                </span>
+                <button
+                  type="button"
+                  className="ghost-action"
+                  disabled={currentPage >= Math.ceil(movies.length / pageSize)}
+                  onClick={() => setCurrentPage((prev) => prev + 1)}
+                >
+                  Вперёд
+                </button>
+              </div>
+            )}
+          </>
         )}
       </section>
 
-      <section id="recommendations" className="movies-section">
-        <div className="section-header">
-          <h2>Персональные рекомендации</h2>
-          {user ? <p>Сформированы на основе весов жанров и личного списка.</p> : <p>Войдите, чтобы получать персональные рекомендации.</p>}
-        </div>
-        {!user ? (
-          <p>Авторизуйтесь, и мы начнём формировать подборки.</p>
-        ) : recommendationsError ? (
-          <p className="error-text">{recommendationsError}</p>
-        ) : recommendations.length === 0 ? (
-          <p>Пока ничего не подобрали. Добавьте жанровые предпочтения в профиле.</p>
-        ) : (
-          <div className="movie-row">
-            <div className="movie-row-content">
-              {recommendations.map((item) => (
-                <MovieCard key={item.movie.movieId} movie={{ ...item.movie, score: item.score }} />
-              ))}
-            </div>
-          </div>
-        )}
-      </section>
     </div>
   )
 }

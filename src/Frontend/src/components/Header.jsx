@@ -5,7 +5,12 @@ const Header = ({ user, onLogout, theme, onToggleTheme }) => {
   const location = useLocation()
   const isDark = theme === 'dark'
 
-  const navItems = [{ label: 'Главная', to: '/' }, ...(user ? [{ label: 'Профиль', to: '/profile' }] : [])]
+  const navItems = [
+    { label: 'Главная', to: '/' },
+    { label: 'Пользователи', to: '/users' },
+    { label: 'Рекомендации', to: '/recommendations' },
+    ...(user ? [{ label: 'Профиль', to: '/profile' }] : [])
+  ]
 
   return (
     <header className="app-header">
@@ -36,9 +41,6 @@ const Header = ({ user, onLogout, theme, onToggleTheme }) => {
         <div className="header-shortcuts">
           <Link className="ghost-action" to="/random">
             Случайный фильм
-          </Link>
-          <Link className="ghost-action" to="/recommendations">
-            Рекомендации
           </Link>
         </div>
         <button

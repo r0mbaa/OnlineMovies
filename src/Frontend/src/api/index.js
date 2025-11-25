@@ -69,5 +69,16 @@ export const userMoviesApi = {
   remove: (movieId) => request(`/api/user/movies/${movieId}`, { method: 'DELETE' })
 }
 
+export const usersApi = {
+  searchProfiles: (query) => request(`/api/users/lookup${buildQueryString({ query })}`),
+  getPublicProfile: (username) => request(`/api/users/public/${encodeURIComponent(username)}`),
+  getPublicMovies: (username) => request(`/api/user/movies/public/${encodeURIComponent(username)}`)
+}
+
+export const userGenreInterestsApi = {
+  get: () => request('/api/user/genre-interests'),
+  update: (payload) => request('/api/user/genre-interests', { method: 'PUT', body: payload })
+}
+
 
 

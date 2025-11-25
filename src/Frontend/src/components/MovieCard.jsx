@@ -41,7 +41,7 @@ const MovieCard = ({ movie }) => {
           </span>
         </div>
         <h3>{title}</h3>
-        <p>{description || 'Описание отсутствует.'}</p>
+        <p className="movie-description">{description || 'Описание отсутствует.'}</p>
         <div className="movie-tags">
           {tagLabels.map((tag) => (
             <span key={tag} className="movie-tag">

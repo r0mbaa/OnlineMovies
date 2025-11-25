@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using OnlineMovies.Database;
 using OnlineMovies.DTO;
 using OnlineMovies.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -112,6 +113,84 @@ public class UsersController : ControllerBase
         {
             Status = "Успешно",
             Message = "Пользователь найден",
+            Data = user
+        });
+    }
+
+    [HttpGet("lookup")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ApiResponse<IEnumerable<UserPublicProfileDto>>>> LookupUsers([FromQuery] string? query, [FromQuery] int limit = 12)
+    {
+        var boundedLimit = Math.Clamp(limit, 1, 30);
+        var trimmedQuery = query?.Trim();
+
+        var usersQuery = _context.Users.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(trimmedQuery) && trimmedQuery.Length >= 2)
+        {
+            usersQuery = usersQuery.Where(u => EF.Functions.Like(u.Username, $"%{trimmedQuery}%"));
+        }
+
+        var results = await usersQuery
+            .OrderBy(u => u.Username)
+            .Take(boundedLimit)
+            .Select(u => new UserPublicProfileDto
+            {
+                UserId = u.UserId,
+                Username = u.Username,
+                Role = u.Role,
+                AvatarUrl = u.AvatarUrl,
+                ProfileDescription = u.ProfileDescription
+            })
+            .ToListAsync();
+
+        return Ok(new ApiResponse<IEnumerable<UserPublicProfileDto>>
+        {
+            Status = "Успешно",
+            Message = "Результаты поиска профилей получены",
+            Data = results
+        });
+    }
+
+    [HttpGet("public/{username}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ApiResponse<UserPublicProfileDto>>> GetPublicProfile(string username)
+    {
+        var trimmedUsername = username?.Trim();
+        if (string.IsNullOrWhiteSpace(trimmedUsername))
+        {
+            return BadRequest(new ApiResponse
+            {
+                Status = "Ошибка",
+                Message = "Имя пользователя не может быть пустым."
+            });
+        }
+
+        var user = await _context.Users
+            .Where(u => u.Username == trimmedUsername)
+            .Select(u => new UserPublicProfileDto
+            {
+                UserId = u.UserId,
+                Username = u.Username,
+                Role = u.Role,
+                AvatarUrl = u.AvatarUrl,
+                ProfileDescription = u.ProfileDescription
+            })
+            .FirstOrDefaultAsync();
+
+        if (user == null)
+        {
+            return NotFound(new ApiResponse
+            {
+                Status = "Ошибка",
+                Message = "Пользователь не найден"
+            });
+        }
+
+        return Ok(new ApiResponse<UserPublicProfileDto>
+        {
+            Status = "Успешно",
+            Message = "Профиль найден",
             Data = user
         });
     }

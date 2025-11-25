@@ -53,6 +53,50 @@ public class UserMoviesController : ControllerBase
         });
     }
 
+    [HttpGet("public/{username}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ApiResponse<IEnumerable<UserMovieResponseDto>>>> GetPublicUserMovies(string username)
+    {
+        var trimmedUsername = username?.Trim();
+        if (string.IsNullOrWhiteSpace(trimmedUsername))
+        {
+            return BadRequest(new ApiResponse<IEnumerable<UserMovieResponseDto>>
+            {
+                Status = "Ошибка",
+                Message = "Имя пользователя не может быть пустым."
+            });
+        }
+
+        var user = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Username == trimmedUsername);
+
+        if (user == null)
+        {
+            return NotFound(new ApiResponse<IEnumerable<UserMovieResponseDto>>
+            {
+                Status = "Ошибка",
+                Message = "Пользователь не найден."
+            });
+        }
+
+        var entries = await BuildUserMoviesQuery()
+            .Where(um => um.UserId == user.UserId)
+            .OrderByDescending(um => um.AddedAt)
+            .ToListAsync();
+
+        var response = entries
+            .Select(MapToResponse)
+            .ToList();
+
+        return Ok(new ApiResponse<IEnumerable<UserMovieResponseDto>>
+        {
+            Status = "Успешно",
+            Message = "Список фильмов пользователя получен",
+            Data = response
+        });
+    }
+
     [HttpPost]
     public async Task<ActionResult<ApiResponse<UserMovieResponseDto>>> AddOrUpdateUserMovie(UserMovieRequestDto request)
     {
