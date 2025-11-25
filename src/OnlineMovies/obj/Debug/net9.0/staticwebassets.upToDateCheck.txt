@@ -1,2 +1,2 @@
-wwwroot\avatars\avatar_user_5_26974b8962474799b8b6c482e557d9b3.jpg
+wwwroot\avatars\avatar_user_5_351053ef2b0e4340ac3cfff6d857e5ea.jpg
 wwwroot\.gitkeep

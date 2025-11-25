@@ -5,12 +5,7 @@ const Header = ({ user, onLogout, theme, onToggleTheme }) => {
   const location = useLocation()
   const isDark = theme === 'dark'
 
-  const navItems = [
-    { label: 'Главная', to: '/' },
-    { label: 'Премьеры', to: '#hero' },
-    { label: 'Тренды', to: '#trending' },
-    ...(user ? [{ label: 'Профиль', to: '/profile' }] : [])
-  ]
+  const navItems = [{ label: 'Главная', to: '/' }, ...(user ? [{ label: 'Профиль', to: '/profile' }] : [])]
 
   return (
     <header className="app-header">

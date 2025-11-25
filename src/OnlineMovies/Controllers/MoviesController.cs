@@ -8,6 +8,7 @@ using OnlineMovies.DTO;
 using OnlineMovies.Mappers;
 using OnlineMovies.Models;
 using OnlineMovies.Responses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,9 +34,9 @@ public class MoviesController : ControllerBase
             query = ApplyFilters(query, filter);
         }
 
-        var movies = await query
-            .OrderBy(m => m.MovieId)
-            .ToListAsync();
+        query = ApplySorting(query, filter);
+
+        var movies = await query.ToListAsync();
 
         var movieDtos = movies.Select(MovieMapper.Map).ToList();
 
@@ -297,7 +298,49 @@ public class MoviesController : ControllerBase
             query = query.Where(m => m.MovieCountries.Any(mc => countryIds.Contains(mc.CountryId)));
         }
 
+        if (filter.ReleaseYearFrom.HasValue)
+        {
+            query = query.Where(m => m.ReleaseYear.HasValue && m.ReleaseYear.Value >= filter.ReleaseYearFrom.Value);
+        }
+
+        if (filter.ReleaseYearTo.HasValue)
+        {
+            query = query.Where(m => m.ReleaseYear.HasValue && m.ReleaseYear.Value <= filter.ReleaseYearTo.Value);
+        }
+
+        if (filter.DurationFrom.HasValue)
+        {
+            query = query.Where(m => m.DurationMinutes.HasValue && m.DurationMinutes.Value >= filter.DurationFrom.Value);
+        }
+
+        if (filter.DurationTo.HasValue)
+        {
+            query = query.Where(m => m.DurationMinutes.HasValue && m.DurationMinutes.Value <= filter.DurationTo.Value);
+        }
+
         return query;
+    }
+
+    private static IQueryable<Movie> ApplySorting(IQueryable<Movie> query, MovieFilterQuery? filter)
+    {
+        var sortBy = filter?.SortBy?.Trim().ToLowerInvariant();
+        var isDesc = string.Equals(filter?.SortDirection, "desc", StringComparison.OrdinalIgnoreCase);
+
+        return sortBy switch
+        {
+            "releaseyear" => isDesc
+                ? query.OrderByDescending(m => m.ReleaseYear ?? int.MinValue).ThenBy(m => m.Title)
+                : query.OrderBy(m => m.ReleaseYear ?? int.MaxValue).ThenBy(m => m.Title),
+            "duration" => isDesc
+                ? query.OrderByDescending(m => m.DurationMinutes ?? int.MinValue).ThenBy(m => m.Title)
+                : query.OrderBy(m => m.DurationMinutes ?? int.MaxValue).ThenBy(m => m.Title),
+            "recent" => isDesc
+                ? query.OrderByDescending(m => m.MovieId)
+                : query.OrderBy(m => m.MovieId),
+            "title" or _ => isDesc
+                ? query.OrderByDescending(m => m.Title).ThenByDescending(m => m.MovieId)
+                : query.OrderBy(m => m.Title).ThenBy(m => m.MovieId)
+        };
     }
 
     private async Task<string?> ValidateRequestAsync(MovieCreateUpdateDto request)

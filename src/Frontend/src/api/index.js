@@ -1,5 +1,33 @@
 import request from './client'
 
+const buildQueryString = (params = {}) => {
+  const searchParams = new URLSearchParams()
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value === undefined || value === null) {
+      return
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((item) => {
+        if (item !== undefined && item !== null && item !== '') {
+          searchParams.append(key, item)
+        }
+      })
+      return
+    }
+
+    if (value === '') {
+      return
+    }
+
+    searchParams.append(key, value)
+  })
+
+  const queryString = searchParams.toString()
+  return queryString ? `?${queryString}` : ''
+}
+
 export const authApi = {
   login: (payload) => request('/api/auth/login', { method: 'POST', body: payload }),
   register: (payload) => request('/api/auth/register', { method: 'POST', body: payload }),
@@ -18,7 +46,7 @@ export const profileApi = {
 }
 
 export const moviesApi = {
-  getMovies: () => request('/api/movies'),
+  getMovies: (params) => request(`/api/movies${buildQueryString(params)}`),
   getMovie: (id) => request(`/api/movies/${id}`),
   getRandomMovie: () => request('/api/movies/random')
 }
@@ -28,7 +56,10 @@ export const recommendationsApi = {
 }
 
 export const directoriesApi = {
-  getStatuses: () => request('/api/statuses')
+  getStatuses: () => request('/api/statuses'),
+  getGenres: () => request('/api/genres'),
+  getTags: () => request('/api/tags'),
+  getCountries: () => request('/api/countries')
 }
 
 export const userMoviesApi = {
