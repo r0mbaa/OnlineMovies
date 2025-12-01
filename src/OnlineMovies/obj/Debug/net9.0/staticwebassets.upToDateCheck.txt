@@ -1,3 +1,2 @@
-wwwroot\avatars\avatar_user_5_351053ef2b0e4340ac3cfff6d857e5ea.jpg
 wwwroot\.gitkeep
-wwwroot\avatars\avatar_user_1_590e45ada52e4e3a9fe3449af3bd306e.jpg
+wwwroot\avatars\avatar_user_1_cd3c6303675f4c58bd5bc8464895fc73.png

@@ -7,7 +7,16 @@ const resolveAvatarUrl = (avatarUrl) => {
   return avatarUrl.startsWith('http') ? avatarUrl : `${API_BASE_URL}${avatarUrl}`
 }
 
-const Profile = ({ user, statuses, userMovies, onUpdateDescription, onUploadAvatar, onRemoveFromList, onRateMovie }) => {
+const Profile = ({
+  user,
+  statuses,
+  userMovies,
+  onUpdateDescription,
+  onUploadAvatar,
+  onRemoveFromList,
+  onRateMovie,
+  onChangePassword
+}) => {
   const navigate = useNavigate()
   const [description, setDescription] = useState(user?.profileDescription || '')
   const [isSavingDescription, setIsSavingDescription] = useState(false)
@@ -16,6 +25,14 @@ const Profile = ({ user, statuses, userMovies, onUpdateDescription, onUploadAvat
   const [avatarUploading, setAvatarUploading] = useState(false)
   const [ratingDrafts, setRatingDrafts] = useState({})
   const [listFeedback, setListFeedback] = useState('')
+  const [showPasswordForm, setShowPasswordForm] = useState(false)
+  const [passwordForm, setPasswordForm] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
+  const [passwordFeedback, setPasswordFeedback] = useState('')
   const fileInputRef = useRef(null)
 
   useEffect(() => {
@@ -107,6 +124,41 @@ const Profile = ({ user, statuses, userMovies, onUpdateDescription, onUploadAvat
     }
   }
 
+  const handlePasswordSubmit = async (event) => {
+    event.preventDefault()
+    setPasswordFeedback('')
+
+    if (!passwordForm.oldPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+      setPasswordFeedback('Заполните все поля')
+      return
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordFeedback('Новые пароли не совпадают')
+      return
+    }
+
+    setIsChangingPassword(true)
+    try {
+      await onChangePassword?.({
+        oldPassword: passwordForm.oldPassword,
+        newPassword: passwordForm.newPassword,
+        confirmPassword: passwordForm.confirmPassword
+      })
+      setPasswordFeedback('Пароль изменён')
+      setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' })
+      setShowPasswordForm(false)
+    } catch (err) {
+      setPasswordFeedback(err.message || 'Не удалось изменить пароль')
+    } finally {
+      setIsChangingPassword(false)
+    }
+  }
+
+  const handlePasswordFieldChange = (field) => (event) => {
+    setPasswordForm((prev) => ({ ...prev, [field]: event.target.value }))
+  }
+
   const avatarUrl = resolveAvatarUrl(user.avatarUrl)
 
   return (
@@ -139,6 +191,59 @@ const Profile = ({ user, statuses, userMovies, onUpdateDescription, onUploadAvat
               <p>{user.email}</p>
               <small>Роль: {user.role}</small>
             </div>
+              <div className="profile-security">
+                <button
+                  type="button"
+                  className="ghost-action"
+                  onClick={() => {
+                    setShowPasswordForm((prev) => !prev)
+                    setPasswordFeedback('')
+                  }}
+                >
+                  {showPasswordForm ? 'Скрыть' : 'Изменить пароль'}
+                </button>
+                {showPasswordForm && (
+                  <form className="profile-password-form" onSubmit={handlePasswordSubmit}>
+                    <label>
+                      Старый пароль
+                      <input
+                        type="password"
+                        autoComplete="current-password"
+                        value={passwordForm.oldPassword}
+                        onChange={handlePasswordFieldChange('oldPassword')}
+                        placeholder="Введите текущий пароль"
+                      />
+                    </label>
+                    <label>
+                      Новый пароль
+                      <input
+                        type="password"
+                        autoComplete="new-password"
+                        value={passwordForm.newPassword}
+                        onChange={handlePasswordFieldChange('newPassword')}
+                        placeholder="Введите новый пароль"
+                      />
+                    </label>
+                    <label>
+                      Повторите новый пароль
+                      <input
+                        type="password"
+                        autoComplete="new-password"
+                        value={passwordForm.confirmPassword}
+                        onChange={handlePasswordFieldChange('confirmPassword')}
+                        placeholder="Повторите новый пароль"
+                      />
+                    </label>
+                    <div className="profile-password-actions">
+                      <button type="submit" className="primary-action" disabled={isChangingPassword}>
+                        {isChangingPassword ? 'Сохраняем...' : 'Сохранить пароль'}
+                      </button>
+                      {passwordFeedback && <p className="profile-feedback">{passwordFeedback}</p>}
+                    </div>
+                  </form>
+                )}
+                {!showPasswordForm && passwordFeedback && <p className="profile-feedback">{passwordFeedback}</p>}
+              </div>
             <form className="profile-description-form" onSubmit={handleDescriptionSubmit}>
               <label htmlFor="profileDescription">Описание профиля</label>
               <textarea

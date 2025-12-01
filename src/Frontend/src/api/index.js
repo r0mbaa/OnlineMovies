@@ -32,7 +32,8 @@ export const authApi = {
   login: (payload) => request('/api/auth/login', { method: 'POST', body: payload }),
   register: (payload) => request('/api/auth/register', { method: 'POST', body: payload }),
   logout: () => request('/api/auth/logout', { method: 'POST' }),
-  checkAuth: () => request('/api/auth/check-auth')
+  checkAuth: () => request('/api/auth/check-auth'),
+  changePassword: (payload) => request('/api/auth/change-password', { method: 'POST', body: payload })
 }
 
 export const profileApi = {

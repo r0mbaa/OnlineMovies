@@ -10,13 +10,13 @@ const Header = ({ user, onLogout, theme, onToggleTheme }) => {
   const navItems = [
     { label: 'Главная', to: '/' },
     { label: 'Пользователи', to: '/users' },
-    { label: 'Рекомендации', to: '/recommendations' },
+    //{ label: 'Рекомендации', to: '/recommendations' },
     ...(user ? [{ label: 'Профиль', to: '/profile' }] : [])
   ]
 
   const quickLinks = [
     { label: 'Случайный фильм', to: '/random' },
-    { label: 'Рекомендации дня', to: '/recommendations' },
+    { label: 'Рекомендации', to: '/recommendations' },
     ...(isAdmin ? [{ label: '+ Создать фильм', to: '/admin/movies/new', accent: true }] : [])
   ]
 
@@ -74,7 +74,7 @@ const Header = ({ user, onLogout, theme, onToggleTheme }) => {
           ))}
         </div>
         <div className="toolbar-info">
-          <span>База фильмов, подборки и социальные функции в одном месте</span>
+          <span>База фильмов, подборки и рекомендации в одном месте</span>
         </div>
       </div>
     </header>

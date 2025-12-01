@@ -1477,7 +1477,9 @@
 .detail-media {
   border-radius: 24px;
   overflow: hidden;
-  max-height: 520px;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  max-height: none;
 }
 
 .detail-content {
@@ -1719,6 +1721,46 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.profile-security {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid var(--border-muted);
+  background: var(--surface-base);
+  box-shadow: var(--shadow-elevated), 0 0 12px var(--neon-ambient-soft);
+}
+
+.profile-password-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.profile-password-form input {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-muted);
+  background: var(--surface-pill);
+  color: var(--text-primary);
+}
+
+.profile-password-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
 }
 
 .profile-stats-grid {

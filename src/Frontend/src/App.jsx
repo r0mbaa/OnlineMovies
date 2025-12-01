@@ -120,6 +120,11 @@ function App() {
     await loadUserMovies()
   }
 
+  const handleChangePassword = async ({ oldPassword, newPassword, confirmPassword }) => {
+    await authApi.changePassword({ oldPassword, newPassword, confirmPassword })
+    await loadProfile()
+  }
+
   const handleRemoveFromList = async (movieId) => {
     await userMoviesApi.remove(movieId)
     await loadUserMovies()
@@ -176,6 +181,7 @@ function App() {
                     onUploadAvatar={handleAvatarUpload}
                     onRemoveFromList={handleRemoveFromList}
                     onRateMovie={handleRateMovie}
+                    onChangePassword={handleChangePassword}
                   />
                 }
               />
