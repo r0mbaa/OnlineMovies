@@ -14,7 +14,6 @@ const Profile = ({
   onUpdateDescription,
   onUploadAvatar,
   onRemoveFromList,
-  onRateMovie,
   onChangePassword
 }) => {
   const navigate = useNavigate()
@@ -23,7 +22,6 @@ const Profile = ({
   const [descFeedback, setDescFeedback] = useState('')
   const [activeStatusId, setActiveStatusId] = useState(statuses[0]?.statusId?.toString() || '')
   const [avatarUploading, setAvatarUploading] = useState(false)
-  const [ratingDrafts, setRatingDrafts] = useState({})
   const [listFeedback, setListFeedback] = useState('')
   const [showPasswordForm, setShowPasswordForm] = useState(false)
   const [passwordForm, setPasswordForm] = useState({
@@ -106,21 +104,6 @@ const Profile = ({
       setListFeedback('Фильм удалён из списка')
     } catch (err) {
       setListFeedback(err.message || 'Не удалось удалить фильм')
-    }
-  }
-
-  const handleRateMovie = async (movieId) => {
-    const draft = ratingDrafts[movieId] || {}
-    if (!draft.score) return
-    try {
-      await onRateMovie?.({
-        movieId,
-        score: Number(draft.score),
-        comment: draft.comment?.trim() || undefined
-      })
-      setRatingDrafts((prev) => ({ ...prev, [movieId]: { score: '', comment: '' } }))
-    } catch (err) {
-      setListFeedback(err.message || 'Не удалось сохранить оценку')
     }
   }
 
@@ -302,40 +285,18 @@ const Profile = ({
                           <p>
                             {movie?.releaseYear || '—'} · {movie?.durationMinutes ? `${movie.durationMinutes} мин` : '—'}
                           </p>
-                        </div>
-                        <div className="list-card-score">
-                          <input
-                            type="number"
-                            min="1"
-                            max="10"
-                            placeholder="Оценка"
-                            value={ratingDrafts[entry.movieId]?.score || ''}
-                            onChange={(event) =>
-                              setRatingDrafts((prev) => ({
-                                ...prev,
-                                [entry.movieId]: { ...(prev[entry.movieId] || {}), score: event.target.value }
-                              }))
-                            }
-                          />
-                          <button type="button" onClick={() => handleRateMovie(entry.movieId)} disabled={!ratingDrafts[entry.movieId]?.score}>
-                            OK
-                          </button>
+                          {entry.score && (
+                            <p className="list-card-rating">
+                              <strong>Оценка:</strong> {entry.score}/10
+                            </p>
+                          )}
+                          {entry.comment && (
+                            <p className="list-card-comment-text">
+                              <strong>Комментарий:</strong> {entry.comment}
+                            </p>
+                          )}
                         </div>
                       </div>
-                      <p className="list-card-comment">
-                        Комментарий:
-                        <input
-                          type="text"
-                          placeholder="Добавьте заметку"
-                          value={ratingDrafts[entry.movieId]?.comment || ''}
-                          onChange={(event) =>
-                            setRatingDrafts((prev) => ({
-                              ...prev,
-                              [entry.movieId]: { ...(prev[entry.movieId] || {}), comment: event.target.value }
-                            }))
-                          }
-                        />
-                      </p>
                       <div className="list-card-actions">
                         <button type="button" className="profile-link" onClick={() => navigate(`/movies/${entry.movieId}`)}>
                           Открыть

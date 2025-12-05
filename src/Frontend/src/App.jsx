@@ -180,7 +180,6 @@ function App() {
                     onUpdateDescription={handleUpdateDescription}
                     onUploadAvatar={handleAvatarUpload}
                     onRemoveFromList={handleRemoveFromList}
-                    onRateMovie={handleRateMovie}
                     onChangePassword={handleChangePassword}
                   />
                 }

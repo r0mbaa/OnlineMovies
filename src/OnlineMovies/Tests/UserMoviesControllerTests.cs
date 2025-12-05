@@ -284,6 +284,87 @@ public class UserMoviesControllerTests
     }
 
     /// <summary>
+    /// Тест: Можно изменить оценку фильма, если он уже в статусе "Оценен".
+    /// Проверяет, что система разрешает изменение оценки для уже оцененных фильмов.
+    /// </summary>
+    [Fact]
+    public async Task RateMovie_ShouldSucceed_WhenChangingRating()
+    {
+        // Arrange - подготовка данных
+        using var context = CreateDbContext();
+
+        // Создаем пользователя
+        var user = new User
+        {
+            UserId = 1,
+            Username = "testuser",
+            Email = "test@example.com",
+            HashedPassword = "hashed",
+            Role = "user"
+        };
+        context.Users.Add(user);
+
+        // Создаем фильм
+        var movie = new Movie
+        {
+            MovieId = 1,
+            Title = "Test Movie",
+            Description = "Test Description",
+            ReleaseYear = 2020
+        };
+        context.Movies.Add(movie);
+
+        // Создаем статусы
+        var watchedStatus = new Status { StatusId = 1, Name = "Просмотрено" };
+        var ratedStatus = new Status { StatusId = 2, Name = "Оценен" };
+        context.Statuses.AddRange(watchedStatus, ratedStatus);
+
+        // Создаем запись о фильме со статусом "Оценен" и оценкой 7
+        var userMovie = new UserMovie
+        {
+            UserId = 1,
+            MovieId = 1,
+            StatusId = 2, // "Оценен"
+            Score = 7,
+            Comment = "Старый комментарий",
+            AddedAt = DateTime.UtcNow
+        };
+        context.UserMovies.Add(userMovie);
+
+        await context.SaveChangesAsync();
+
+        var controller = CreateController(context, 1);
+
+        var request = new UserMovieRateRequestDto
+        {
+            MovieId = 1,
+            Score = 9, // Новая оценка
+            Comment = "Новый комментарий"
+        };
+
+        // Act - выполнение действия
+        var result = await controller.RateMovie(request);
+
+        // Assert - проверка результата
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var response = Assert.IsType<ApiResponse<UserMovieResponseDto>>(okResult.Value);
+        Assert.Equal("Успешно", response.Status);
+        Assert.NotNull(response.Data);
+        Assert.Equal(9, response.Data.Score); // Новая оценка
+        Assert.Equal("Новый комментарий", response.Data.Comment);
+        Assert.Equal("Оценен", response.Data.StatusName);
+
+        // Проверяем, что оценка и комментарий обновились в базе данных
+        var updatedUserMovie = await context.UserMovies
+            .Include(um => um.Status)
+            .FirstOrDefaultAsync(um => um.UserId == 1 && um.MovieId == 1);
+        Assert.NotNull(updatedUserMovie);
+        Assert.Equal(2, updatedUserMovie.StatusId); // "Оценен"
+        Assert.Equal(9, updatedUserMovie.Score); // Новая оценка
+        Assert.Equal("Новый комментарий", updatedUserMovie.Comment);
+    }
+
+    /// <summary>
     /// Тест: Проверка существования пользователя при оценке фильма.
     /// Проверяет, что система корректно обрабатывает случай удаленного пользователя
     /// при попытке оценить фильм.

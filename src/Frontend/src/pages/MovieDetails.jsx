@@ -15,6 +15,9 @@ const MovieDetails = ({ user, statuses, userMovies, onAddToList, onRemoveFromLis
   const [comment, setComment] = useState('')
   const [adminActionMessage, setAdminActionMessage] = useState('')
   const [deletingMovie, setDeletingMovie] = useState(false)
+  const [showRatingModal, setShowRatingModal] = useState(false)
+  const [modalRating, setModalRating] = useState('')
+  const [modalComment, setModalComment] = useState('')
 
   const entry = useMemo(() => userMovies.find((item) => item.movieId === movieId), [userMovies, movieId])
   
@@ -25,11 +28,28 @@ const MovieDetails = ({ user, statuses, userMovies, onAddToList, onRemoveFromLis
     return watchedStatus && entry.statusId === watchedStatus.statusId
   }, [entry, statuses])
 
+  // Проверяем, находится ли фильм в статусе "Оценен"
+  const isRated = useMemo(() => {
+    if (!entry || !statuses.length) return false
+    const ratedStatus = statuses.find((s) => s.name === 'Оценен')
+    return ratedStatus && entry.statusId === ratedStatus.statusId
+  }, [entry, statuses])
+
+  // Фильтруем статусы, исключая "Оценен" из списка выбора
+  const availableStatuses = useMemo(() => {
+    return statuses.filter((s) => s.name !== 'Оценен')
+  }, [statuses])
+
   useEffect(() => {
     setSelectedStatusId(entry?.statusId?.toString() || '')
     setRating(entry?.score?.toString() || '')
     setComment(entry?.comment || '')
-  }, [entry])
+    // Если фильм в статусе "Оценен", показываем его оценку и комментарий
+    if (isRated) {
+      setModalRating(entry?.score?.toString() || '')
+      setModalComment(entry?.comment || '')
+    }
+  }, [entry, isRated])
 
   useEffect(() => {
     let isMounted = true
@@ -93,18 +113,32 @@ const MovieDetails = ({ user, statuses, userMovies, onAddToList, onRemoveFromLis
     })
   }
 
+  const handleOpenRatingModal = () => {
+    setModalRating(entry?.score?.toString() || '')
+    setModalComment(entry?.comment || '')
+    setShowRatingModal(true)
+  }
+
+  const handleCloseRatingModal = () => {
+    setShowRatingModal(false)
+    setModalRating('')
+    setModalComment('')
+  }
+
+  const handleSubmitRating = async () => {
+    if (!modalRating) return
+    await onRateMovie?.({
+      movieId,
+      score: Number(modalRating),
+      comment: modalComment.trim() || undefined
+    })
+    handleCloseRatingModal()
+  }
+
   const handleRemove = async () => {
     await onRemoveFromList?.(movieId)
   }
 
-  const handleRate = async () => {
-    if (!rating) return
-    await onRateMovie?.({
-      movieId,
-      score: Number(rating),
-      comment: comment.trim() || undefined
-    })
-  }
 
   const handleDeleteMovie = async () => {
     if (!user?.role || user.role !== 'admin') {
@@ -193,7 +227,7 @@ const MovieDetails = ({ user, statuses, userMovies, onAddToList, onRemoveFromLis
                 <div className="detail-list-controls">
                   <select value={selectedStatusId} onChange={(event) => setSelectedStatusId(event.target.value)}>
                     <option value="">Выберите статус</option>
-                    {statuses.map((status) => (
+                    {availableStatuses.map((status) => (
                       <option key={status.statusId} value={status.statusId}>
                         {status.name}
                       </option>
@@ -208,20 +242,28 @@ const MovieDetails = ({ user, statuses, userMovies, onAddToList, onRemoveFromLis
                     </button>
                   )}
                 </div>
-                {/* Показываем форму оценки только если фильм в статусе "Просмотрено" */}
-                {isWatched && (
-                  <div className="detail-rate">
-                    <input
-                      type="number"
-                      min="1"
-                      max="10"
-                      placeholder="Оценка"
-                      value={rating}
-                      onChange={(event) => setRating(event.target.value)}
-                    />
-                    <input placeholder="Комментарий" value={comment} onChange={(event) => setComment(event.target.value)} />
-                    <button type="button" onClick={handleRate} disabled={!rating}>
+                {/* Показываем предложение оценить фильм, если он в статусе "Просмотрено" и еще не оценен */}
+                {isWatched && !isRated && (
+                  <div className="detail-rating-prompt">
+                    <p>На основе того, что вы посмотрели этот фильм, не хотите ли вы его оценить?</p>
+                    <button type="button" className="primary-action" onClick={handleOpenRatingModal}>
                       Оценить
+                    </button>
+                  </div>
+                )}
+                {/* Показываем информацию об оценке, если фильм уже оценен */}
+                {isRated && (
+                  <div className="detail-rating-info">
+                    <p>
+                      <strong>Ваша оценка:</strong> {entry?.score}/10
+                    </p>
+                    {entry?.comment && (
+                      <p>
+                        <strong>Комментарий:</strong> {entry.comment}
+                      </p>
+                    )}
+                    <button type="button" className="ghost-action" onClick={handleOpenRatingModal}>
+                      Изменить оценку
                     </button>
                   </div>
                 )}
@@ -232,6 +274,51 @@ const MovieDetails = ({ user, statuses, userMovies, onAddToList, onRemoveFromLis
           </div>
         </div>
       </div>
+
+      {/* Модальное окно для оценки фильма */}
+      {showRatingModal && (
+        <div className="modal-overlay" onClick={handleCloseRatingModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Оценить фильм</h2>
+              <button type="button" className="modal-close" onClick={handleCloseRatingModal}>
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <label>
+                Оценка (1-10)
+                <input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={modalRating}
+                  onChange={(e) => setModalRating(e.target.value)}
+                  placeholder="Введите оценку от 1 до 10"
+                  autoFocus
+                />
+              </label>
+              <label>
+                Комментарий (необязательно)
+                <textarea
+                  value={modalComment}
+                  onChange={(e) => setModalComment(e.target.value)}
+                  placeholder="Оставьте комментарий о фильме..."
+                  rows="4"
+                />
+              </label>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="ghost-action" onClick={handleCloseRatingModal}>
+                Отмена
+              </button>
+              <button type="button" className="primary-action" onClick={handleSubmitRating} disabled={!modalRating}>
+                Отправить
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

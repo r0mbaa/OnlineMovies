@@ -226,8 +226,9 @@ public class UserMoviesController : ControllerBase
             .Include(um => um.Status)
             .FirstOrDefaultAsync(um => um.UserId == userId && um.MovieId == request.MovieId);
 
-        // Проверяем, что фильм уже просмотрен (имеет статус "Просмотрено")
-        if (userMovie == null || userMovie.StatusId != watchedStatus.StatusId)
+        // Проверяем, что фильм уже просмотрен (имеет статус "Просмотрено") или уже оценен (статус "Оценен")
+        // Разрешаем изменение оценки для уже оцененных фильмов
+        if (userMovie == null || (userMovie.StatusId != watchedStatus.StatusId && userMovie.StatusId != ratedStatus.StatusId))
         {
             return BadRequest(new ApiResponse<UserMovieResponseDto>
             {
