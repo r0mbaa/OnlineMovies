@@ -31,7 +31,8 @@ public class UserMoviesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ApiResponse<IEnumerable<UserMovieResponseDto>>>> GetUserMovies()
     {
-        if (!TryGetUserId<IEnumerable<UserMovieResponseDto>>(out var userId, out var errorResult))
+        var (success, userId, errorResult) = await TryGetUserIdAsync<IEnumerable<UserMovieResponseDto>>();
+        if (!success)
         {
             return errorResult!;
         }
@@ -110,7 +111,8 @@ public class UserMoviesController : ControllerBase
             });
         }
 
-        if (!TryGetUserId<UserMovieResponseDto>(out var userId, out var errorResult))
+        var (success, userId, errorResult) = await TryGetUserIdAsync<UserMovieResponseDto>();
+        if (!success)
         {
             return errorResult!;
         }
@@ -180,7 +182,8 @@ public class UserMoviesController : ControllerBase
             });
         }
 
-        if (!TryGetUserId<UserMovieResponseDto>(out var userId, out var errorResult))
+        var (success, userId, errorResult) = await TryGetUserIdAsync<UserMovieResponseDto>();
+        if (!success)
         {
             return errorResult!;
         }
@@ -207,19 +210,31 @@ public class UserMoviesController : ControllerBase
             });
         }
 
+        // Проверяем, что фильм находится в статусе "Просмотрено" перед оценкой
+        var watchedStatus = await _context.Statuses.FirstOrDefaultAsync(s => s.Name == "Просмотрено");
+        if (watchedStatus == null)
+        {
+            return BadRequest(new ApiResponse<UserMovieResponseDto>
+            {
+                Status = "Ошибка",
+                Message = "Статус \"Просмотрено\" отсутствует. Добавьте его в справочник статусов.",
+                Data = null
+            });
+        }
+
         var userMovie = await _context.UserMovies
+            .Include(um => um.Status)
             .FirstOrDefaultAsync(um => um.UserId == userId && um.MovieId == request.MovieId);
 
-        if (userMovie == null)
+        // Проверяем, что фильм уже просмотрен (имеет статус "Просмотрено")
+        if (userMovie == null || userMovie.StatusId != watchedStatus.StatusId)
         {
-            userMovie = new UserMovie
+            return BadRequest(new ApiResponse<UserMovieResponseDto>
             {
-                UserId = userId,
-                MovieId = request.MovieId,
-                AddedAt = DateTime.UtcNow
-            };
-
-            _context.UserMovies.Add(userMovie);
+                Status = "Ошибка",
+                Message = "Нельзя оценить фильм, пока он не добавлен в статус \"Просмотрено\".",
+                Data = null
+            });
         }
 
         userMovie.Score = request.Score;
@@ -251,7 +266,8 @@ public class UserMoviesController : ControllerBase
             });
         }
 
-        if (!TryGetUserId<UserMovieResponseDto>(out var userId, out var errorResult))
+        var (success, userId, errorResult) = await TryGetUserIdAsync<UserMovieResponseDto>();
+        if (!success)
         {
             return errorResult!;
         }
@@ -322,6 +338,43 @@ public class UserMoviesController : ControllerBase
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Асинхронная версия TryGetUserId с проверкой существования пользователя в базе данных.
+    /// Используется для обработки случая, когда пользователь был удален, но его токен еще валиден.
+    /// </summary>
+    private async Task<(bool Success, int UserId, ActionResult<ApiResponse<T>>? ErrorResult)> TryGetUserIdAsync<T>()
+    {
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userIdValue) || !int.TryParse(userIdValue, out var userId))
+        {
+            var errorResult = Unauthorized(new ApiResponse<T>
+            {
+                Status = "Ошибка",
+                Message = "Не удалось определить пользователя.",
+                Data = default
+            });
+
+            return (false, 0, errorResult);
+        }
+
+        // Проверяем, существует ли пользователь в базе данных
+        // Это обрабатывает случай, когда админ удалил пользователя, но его токен еще валиден
+        var userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
+        if (!userExists)
+        {
+            var errorResult = Unauthorized(new ApiResponse<T>
+            {
+                Status = "Ошибка",
+                Message = "Пользователь не найден. Возможно, ваш аккаунт был удален.",
+                Data = default
+            });
+
+            return (false, userId, errorResult);
+        }
+
+        return (true, userId, null);
     }
 
     private string? ExtractModelStateError()

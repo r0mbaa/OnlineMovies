@@ -17,6 +17,13 @@ const MovieDetails = ({ user, statuses, userMovies, onAddToList, onRemoveFromLis
   const [deletingMovie, setDeletingMovie] = useState(false)
 
   const entry = useMemo(() => userMovies.find((item) => item.movieId === movieId), [userMovies, movieId])
+  
+  // Проверяем, находится ли фильм в статусе "Просмотрено"
+  const isWatched = useMemo(() => {
+    if (!entry || !statuses.length) return false
+    const watchedStatus = statuses.find((s) => s.name === 'Просмотрено')
+    return watchedStatus && entry.statusId === watchedStatus.statusId
+  }, [entry, statuses])
 
   useEffect(() => {
     setSelectedStatusId(entry?.statusId?.toString() || '')
@@ -201,20 +208,23 @@ const MovieDetails = ({ user, statuses, userMovies, onAddToList, onRemoveFromLis
                     </button>
                   )}
                 </div>
-                <div className="detail-rate">
-                  <input
-                    type="number"
-                    min="1"
-                    max="10"
-                    placeholder="Оценка"
-                    value={rating}
-                    onChange={(event) => setRating(event.target.value)}
-                  />
-                  <input placeholder="Комментарий" value={comment} onChange={(event) => setComment(event.target.value)} />
-                  <button type="button" onClick={handleRate} disabled={!rating}>
-                    Оценить
-                  </button>
-                </div>
+                {/* Показываем форму оценки только если фильм в статусе "Просмотрено" */}
+                {isWatched && (
+                  <div className="detail-rate">
+                    <input
+                      type="number"
+                      min="1"
+                      max="10"
+                      placeholder="Оценка"
+                      value={rating}
+                      onChange={(event) => setRating(event.target.value)}
+                    />
+                    <input placeholder="Комментарий" value={comment} onChange={(event) => setComment(event.target.value)} />
+                    <button type="button" onClick={handleRate} disabled={!rating}>
+                      Оценить
+                    </button>
+                  </div>
+                )}
               </>
             ) : (
               <p className="detail-hint">Войдите в аккаунт, чтобы сохранять фильм в личных списках.</p>

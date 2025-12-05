@@ -34,7 +34,8 @@ public class UserProfileController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ApiResponse<UserProfileResponseDto>>> GetProfile()
     {
-        if (!TryGetUserId(out var userId, out var errorResult))
+        var (success, userId, errorResult) = await TryGetUserIdAsync();
+        if (!success)
         {
             return errorResult!;
         }
@@ -85,7 +86,8 @@ public class UserProfileController : ControllerBase
             });
         }
 
-        if (!TryGetUserId(out var userId, out var errorResult))
+        var (success, userId, errorResult) = await TryGetUserIdAsync();
+        if (!success)
         {
             return errorResult!;
         }
@@ -115,7 +117,8 @@ public class UserProfileController : ControllerBase
     [RequestSizeLimit(MaxAvatarSizeBytes)]
     public async Task<ActionResult<ApiResponse<UserProfileResponseDto>>> UploadAvatar([FromForm] UserAvatarUploadDto request)
     {
-        if (!TryGetUserId(out var userId, out var errorResult))
+        var (success, userId, errorResult) = await TryGetUserIdAsync();
+        if (!success)
         {
             return errorResult!;
         }
@@ -162,6 +165,43 @@ public class UserProfileController : ControllerBase
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Асинхронная версия TryGetUserId с проверкой существования пользователя в базе данных.
+    /// Используется для обработки случая, когда пользователь был удален, но его токен еще валиден.
+    /// </summary>
+    private async Task<(bool Success, int UserId, ActionResult<ApiResponse<UserProfileResponseDto>>? ErrorResult)> TryGetUserIdAsync()
+    {
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userIdValue) || !int.TryParse(userIdValue, out var userId))
+        {
+            var errorResult = Unauthorized(new ApiResponse<UserProfileResponseDto>
+            {
+                Status = "Ошибка",
+                Message = "Не удалось определить пользователя.",
+                Data = null
+            });
+
+            return (false, 0, errorResult);
+        }
+
+        // Проверяем, существует ли пользователь в базе данных
+        // Это обрабатывает случай, когда админ удалил пользователя, но его токен еще валиден
+        var userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
+        if (!userExists)
+        {
+            var errorResult = Unauthorized(new ApiResponse<UserProfileResponseDto>
+            {
+                Status = "Ошибка",
+                Message = "Пользователь не найден. Возможно, ваш аккаунт был удален.",
+                Data = null
+            });
+
+            return (false, userId, errorResult);
+        }
+
+        return (true, userId, null);
     }
 
     private async Task<ActionResult<ApiResponse<UserProfileResponseDto>>> UpdateDescriptionInternal(int targetUserId, UserProfileDescriptionDto request, bool treatMissingAsUnauthorized)

@@ -124,9 +124,32 @@ public class AuthController : ControllerBase
 
     [HttpGet("check-auth")]
     [Authorize]
-    public IActionResult CheckAuth()
+    public async Task<IActionResult> CheckAuth()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userIdValue) || !int.TryParse(userIdValue, out var userId))
+        {
+            return Unauthorized(new ApiResponse<object>
+            {
+                Status = "Ошибка",
+                Message = "Не удалось определить пользователя.",
+                Data = null
+            });
+        }
+
+        // Проверяем, существует ли пользователь в базе данных
+        // Это обрабатывает случай, когда админ удалил пользователя, но его токен еще валиден
+        var userExists = await _context.Users.AnyAsync(u => u.UserId == userId);
+        if (!userExists)
+        {
+            return Unauthorized(new ApiResponse<object>
+            {
+                Status = "Ошибка",
+                Message = "Пользователь не найден. Возможно, ваш аккаунт был удален.",
+                Data = null
+            });
+        }
+
         var username = User.FindFirstValue(ClaimTypes.Name);
         var userRole = User.FindFirstValue(ClaimTypes.Role);
 
