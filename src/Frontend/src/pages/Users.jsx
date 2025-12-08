@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { usersApi } from '../api'
+import { API_BASE_URL } from '../api/client'
+
+const resolveAvatarUrl = (avatarUrl) => {
+  if (!avatarUrl) return null
+  return avatarUrl.startsWith('http') ? avatarUrl : `${API_BASE_URL}${avatarUrl}`
+}
 
 const Users = () => {
   const [query, setQuery] = useState('')
@@ -61,11 +67,13 @@ const Users = () => {
         <p>Пока никого не нашли. Попробуйте другой запрос.</p>
       ) : (
         <div className="profile-search-results">
-          {results.map((item) => (
-            <div key={item.userId} className="profile-search-card">
-              <div className="profile-search-avatar">
-                {item.avatarUrl ? <img src={item.avatarUrl} alt={item.username} /> : <span>{item.username?.charAt(0).toUpperCase()}</span>}
-              </div>
+          {results.map((item) => {
+            const avatarUrl = resolveAvatarUrl(item.avatarUrl)
+            return (
+              <div key={item.userId} className="profile-search-card">
+                <div className="profile-search-avatar">
+                  {avatarUrl ? <img src={avatarUrl} alt={item.username} /> : <span>{item.username?.charAt(0).toUpperCase()}</span>}
+                </div>
               <div className="profile-search-body">
                 <h3>{item.username}</h3>
                 <p>{item.profileDescription || 'Пользователь ещё не добавил описание.'}</p>
@@ -77,7 +85,8 @@ const Users = () => {
                 </div>
               </div>
             </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </section>

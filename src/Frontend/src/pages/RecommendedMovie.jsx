@@ -143,6 +143,26 @@ const RecommendedMovie = ({ user }) => {
 
   const current = recommendations[currentIndex]
 
+  // Нормализуем процент совпадения: максимум 100%
+  // Логика: 1 жанр (100%) -> 90%, 2 жанра -> 95%, 3 жанра -> 98%, 4+ -> 99%
+  const normalizeScore = (rawScore) => {
+    if (rawScore <= 0) return 0
+    // Используем формулу для плавной нормализации
+    // Для точных значений: 1.0 -> 90%, 2.0 -> 95%, 3.0 -> 98%, далее -> 99%
+    if (rawScore <= 1.0) return 90
+    if (rawScore <= 2.0) {
+      // Линейная интерполяция между 90% (score=1) и 95% (score=2)
+      return Math.round(90 + (rawScore - 1) * 5)
+    }
+    if (rawScore <= 3.0) {
+      // Линейная интерполяция между 95% (score=2) и 98% (score=3)
+      return Math.round(95 + (rawScore - 2) * 3)
+    }
+    // Для score > 3.0: плавно приближаемся к 99%
+    const normalized = 98 + (1 - 1 / (rawScore - 2))
+    return Math.min(99, Math.max(98, Math.round(normalized)))
+  }
+
   return (
     <section className="recommendations-page">
       <div className="preferences-card">
@@ -220,7 +240,7 @@ const RecommendedMovie = ({ user }) => {
               </p>
               <h2>{current.movie.title}</h2>
               <p className="detail-description">{current.movie.description || 'Описание отсутствует.'}</p>
-              <p className="single-score">Совпадение: {(current.score * 100).toFixed(0)}%</p>
+              <p className="single-score">Совпадение: {normalizeScore(current.score).toFixed(0)}%</p>
               <div className="detail-tags">
                 {(current.movie.tags || []).map((tag) => (
                   <span key={tag.id} className="movie-tag">

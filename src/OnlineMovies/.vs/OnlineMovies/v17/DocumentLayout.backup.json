@@ -107,7 +107,7 @@
               "RelativeDocumentMoniker": "Tests\\UserMoviesControllerTests.cs",
               "ToolTip": "C:\\Users\\r0mba-Notebook\\OnlineMovies\\src\\OnlineMovies\\Tests\\UserMoviesControllerTests.cs",
               "RelativeToolTip": "Tests\\UserMoviesControllerTests.cs",
-              "ViewState": "AgIAABEBAAAAAAAAAAAmwHYBAAAmAAAAAAAAAA==",
+              "ViewState": "AgIAAEcAAAAAAAAAAAAwwHYBAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-05T19:46:38.563Z",
               "EditorCaption": ""
@@ -122,7 +122,8 @@
               "RelativeToolTip": "Tests\\UnitTest1.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-05T19:46:32.556Z"
+              "WhenOpened": "2025-12-05T19:46:32.556Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -204,9 +205,10 @@
               "RelativeDocumentMoniker": "Controllers\\UserMoviesController.cs",
               "ToolTip": "C:\\Users\\r0mba-Notebook\\OnlineMovies\\src\\OnlineMovies\\Controllers\\UserMoviesController.cs",
               "RelativeToolTip": "Controllers\\UserMoviesController.cs",
-              "ViewState": "AgIAAIcAAAAAAAAAAAAAAJ0AAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAAIkAAAAAAAAAAAAAAJ8AAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-24T21:07:31.947Z"
+              "WhenOpened": "2025-11-24T21:07:31.947Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",

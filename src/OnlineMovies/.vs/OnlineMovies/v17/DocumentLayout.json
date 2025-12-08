@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\r0mba-Notebook\\OnlineMovies\\src\\OnlineMovies\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\r0mba-notebook\\onlinemovies\\src\\onlinemovies\\controllers\\usermoviescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:controllers\\usermoviescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\r0mba-notebook\\onlinemovies\\src\\onlinemovies\\tests\\usermoviescontrollertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:tests\\usermoviescontrollertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\r0mba-notebook\\onlinemovies\\src\\onlinemovies\\tests\\unittest1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:tests\\unittest1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\r0mba-notebook\\onlinemovies\\src\\onlinemovies\\controllers\\usermoviescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|solutionrelative:controllers\\usermoviescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D3EC69D7-B4E0-4AC8-B743-DC5345438F23}|OnlineMovies.csproj|c:\\users\\r0mba-notebook\\onlinemovies\\src\\onlinemovies\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
@@ -97,24 +97,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "UserMoviesControllerTests.cs",
               "DocumentMoniker": "C:\\Users\\r0mba-Notebook\\OnlineMovies\\src\\OnlineMovies\\Tests\\UserMoviesControllerTests.cs",
               "RelativeDocumentMoniker": "Tests\\UserMoviesControllerTests.cs",
               "ToolTip": "C:\\Users\\r0mba-Notebook\\OnlineMovies\\src\\OnlineMovies\\Tests\\UserMoviesControllerTests.cs",
               "RelativeToolTip": "Tests\\UserMoviesControllerTests.cs",
-              "ViewState": "AgIAABEBAAAAAAAAAAAmwHYBAAAmAAAAAAAAAA==",
+              "ViewState": "AgIAAIIBAAAAAAAAAAAAAHYBAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-05T19:46:38.563Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "UnitTest1.cs",
               "DocumentMoniker": "C:\\Users\\r0mba-Notebook\\OnlineMovies\\src\\OnlineMovies\\Tests\\UnitTest1.cs",
               "RelativeDocumentMoniker": "Tests\\UnitTest1.cs",
@@ -122,7 +122,8 @@
               "RelativeToolTip": "Tests\\UnitTest1.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-05T19:46:32.556Z"
+              "WhenOpened": "2025-12-05T19:46:32.556Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -198,7 +199,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "UserMoviesController.cs",
               "DocumentMoniker": "C:\\Users\\r0mba-Notebook\\OnlineMovies\\src\\OnlineMovies\\Controllers\\UserMoviesController.cs",
               "RelativeDocumentMoniker": "Controllers\\UserMoviesController.cs",
