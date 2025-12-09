@@ -2013,23 +2013,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\r0mba-Notebook\\.nuget\\packages\\": {},
+    "C:\\Users\\parom\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\r0mba-Notebook\\OnlineMovies\\src\\OnlineMovies\\OnlineMovies.csproj",
+      "projectUniqueName": "C:\\Users\\parom\\OneDrive\\Документы\\GitHub\\OnlineMovies\\src\\OnlineMovies\\OnlineMovies.csproj",
       "projectName": "OnlineMovies",
-      "projectPath": "C:\\Users\\r0mba-Notebook\\OnlineMovies\\src\\OnlineMovies\\OnlineMovies.csproj",
-      "packagesPath": "C:\\Users\\r0mba-Notebook\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\r0mba-Notebook\\OnlineMovies\\src\\OnlineMovies\\obj\\",
+      "projectPath": "C:\\Users\\parom\\OneDrive\\Документы\\GitHub\\OnlineMovies\\src\\OnlineMovies\\OnlineMovies.csproj",
+      "packagesPath": "C:\\Users\\parom\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\parom\\OneDrive\\Документы\\GitHub\\OnlineMovies\\src\\OnlineMovies\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\r0mba-Notebook\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\parom\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],

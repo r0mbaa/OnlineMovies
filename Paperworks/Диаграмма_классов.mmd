@@ -1,0 +1,161 @@
+classDiagram
+    class Guest {
+        +login(username, password) User
+        +register(username, email, password) User
+        +viewCatalog()
+        +searchMovies(query) Movie[]
+        +getMovieById(id) Movie
+        +getRandomMovie() Movie
+        +getUserProfile(username) UserProfile
+        +getUserMovies(username) UserMovie[]
+    }
+
+    class User {
+        +int userId
+        +string username
+        +string email
+        -string hashedPassword
+        +string role
+        +string? avatarUrl
+        +string? profileDescription
+        +viewCatalog()
+        +searchMovies(query) Movie[]
+        +addMovieToList(movieId, statusId, comment?) UserMovie
+        +updateMovieStatus(userMovieId, statusId) UserMovie
+        +rateMovie(movieId, score, comment?) UserMovie
+        +removeMovieFromList(movieId) void
+        +getMyMovies() UserMovie[]
+        +updateGenreInterests(interests) void
+        +getGenreInterests() UserGenreInterest[]
+        +getRecommendations() MovieRecommendation[]
+        +updateProfile(description?) User
+        +uploadAvatar(file) User
+        +changePassword(oldPassword, newPassword) void
+        +logout() void
+    }
+
+    class Administrator {
+        +addMovie(movieData) Movie
+        +editMovie(movieId, movieData) Movie
+        +deleteMovie(movieId) void
+        +getAllUsers() User[]
+        +getUserById(userId) User
+        +updateUser(userId, userData) User
+        +deleteUser(userId) void
+        +addGenre(name) Genre
+        +editGenre(genreId, name) Genre
+        +deleteGenre(genreId) void
+        +addTag(name) Tag
+        +editTag(tagId, name) Tag
+        +deleteTag(tagId) void
+        +addCountry(name) Country
+        +editCountry(countryId, name) Country
+        +deleteCountry(countryId) void
+    }
+
+    class Movie {
+        +int movieId
+        +string title
+        +string? description
+        +int? releaseYear
+        +string? director
+        +string? posterUrl
+        +int? durationMinutes
+        +getAverageRating() float?
+    }
+
+    class UserMovie {
+        +int userMovieId
+        +int userId
+        +int movieId
+        +int? statusId
+        +int? score
+        +string? comment
+        +DateTime addedAt
+    }
+
+    class Status {
+        +int statusId
+        +string name
+    }
+
+    class Genre {
+        +int genreId
+        +string name
+    }
+
+    class Tag {
+        +int tagId
+        +string name
+    }
+
+    class Country {
+        +int countryId
+        +string name
+    }
+
+    class Trailer {
+        +int trailerId
+        +int movieId
+        +string trailerUrl
+    }
+
+    class MovieGenre {
+        +int movieId
+        +int genreId
+    }
+
+    class MovieTag {
+        +int movieId
+        +int tagId
+    }
+
+    class MovieCountry {
+        +int movieId
+        +int countryId
+    }
+
+    class UserGenreInterest {
+        +int userId
+        +int genreId
+        +float weight
+    }
+
+    %% Наследование
+    Administrator --|> User
+
+    %% Создание
+    Guest ..> User : creates
+
+    %% Композиция
+    User "1" *-- "*" UserMovie : has
+    User "1" *-- "*" UserGenreInterest : has
+    Movie "1" *-- "*" Trailer : has
+    Movie "1" *-- "*" MovieGenre : has
+    Movie "1" *-- "*" MovieTag : has
+    Movie "1" *-- "*" MovieCountry : has
+    Movie "1" *-- "*" UserMovie : in lists
+    Genre "1" *-- "*" MovieGenre : used in
+    Genre "1" *-- "*" UserGenreInterest : used in
+    Tag "1" *-- "*" MovieTag : used in
+    Country "1" *-- "*" MovieCountry : used in
+    Status "1" *-- "*" UserMovie : used in
+
+    %% Ассоциации
+    UserMovie "*" --> "1" User : belongs to
+    UserMovie "*" --> "1" Movie : references
+    UserMovie "*" --> "1" Status : has
+    MovieGenre "*" --> "1" Movie
+    MovieGenre "*" --> "1" Genre
+    MovieTag "*" --> "1" Movie
+    MovieTag "*" --> "1" Tag
+    MovieCountry "*" --> "1" Movie
+    MovieCountry "*" --> "1" Country
+    UserGenreInterest "*" --> "1" User : belongs to
+    UserGenreInterest "*" --> "1" Genre : references
+    Trailer "*" --> "1" Movie : belongs to
+
+    %% Использование
+    Guest ..> Movie : views
+    User ..> Movie : views
+

@@ -139,3 +139,13 @@ C:\Users\r0mba-Notebook\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\xunit.abs
 C:\Users\r0mba-Notebook\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\xunit.assert.dll
 C:\Users\r0mba-Notebook\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\xunit.core.dll
 C:\Users\r0mba-Notebook\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\xunit.execution.dotnet.dll
+C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\Tests\bin\Debug\net9.0\appsettings.Development.json
+C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\Tests\obj\OnlineMovies.Tests.csproj.nuget.dgspec.json
+C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\Tests\obj\project.assets.json
+C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\Castle.Core.dll
+C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\Moq.dll
+C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\xunit.abstractions.dll
+C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\xunit.assert.dll
+C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\xunit.core.dll
+C:\Users\parom\OneDrive\Документы\GitHub\OnlineMovies\src\OnlineMovies\bin\Debug\net9.0\xunit.execution.dotnet.dll
